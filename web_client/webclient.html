@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <Title>Web Client</Title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link rel ="stylesheet" type="text/css" href="theme.css">
+    </head>
+
+    <body>
+        <div class ="container">
+            <form action = "uploadfile.php" method = "POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="filename">File Name</label>
+                    <input type="text" class="form-control" id="nameFile" placeholder="Enter File Name">
+                </div>
+                <div class="form-group">
+                        <label for="filedescription">File Description</label>
+                        <textarea class="form-control" id="fileDesc" rows="3"></textarea>
+                </div> 
+                <div class="form-group">
+                        <label for="Fileupload">Please select the file to upload</label>
+                        <input type="file" class="form-control-file" id="uploadfile">
+                </div>
+                    <button type="submit" class="btn btn-primary">Upload File</button>
+            </form>
+        </div>
+    </body>
+</html>
