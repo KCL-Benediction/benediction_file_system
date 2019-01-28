@@ -5,6 +5,8 @@ const { shell } = require('electron')
 const fs = require('fs');
 const folderImageUrl = 'https://i.imgur.com/KOVrtbf.png'
 const fileImageUrl = 'https://i.imgur.com/guAfUJd.png'
+const lastPageImageUrl = 'https://i.imgur.com/j93mjsG.png';
+const backButtonTitle = "。。。";
 let currentPath = "/Users/dannyyaou";
 
 function changePath(path) {
@@ -13,7 +15,7 @@ function changePath(path) {
 	document.getElementById('path').innerHTML = path;
 	let files = fs.readdirSync(path);
 	let node, textnode;
-	node = createNode("<--- Back");
+	node = createNode(backButtonTitle);
 	document.getElementById("fileList").appendChild(node);
 	for (var i = 0; i < files.length; i++) {
 		node = createNode(files[i])
@@ -31,7 +33,7 @@ function bindEventToButton(){
 				if(event.path[i].tagName === 'BUTTON'){
 					var newFileName = event.path[i].className.split("fileName-")[1];
 					console.log(newFileName)
-					if (newFileName === "<--- Back") {
+					if (newFileName === backButtonTitle) {
 						var newPath = currentPath.split("/").splice(0,currentPath.split("/").length-1).join("/");
 					}else{
 						var newPath = currentPath + "/" + newFileName;
@@ -53,7 +55,10 @@ function createNode(fileName){
 	if (fileName[0] !== '.') {
   	node = document.createElement("button");
 	  image = document.createElement('img');
-	  if (fileName.indexOf(".")>=0) {
+	  if(fileName === backButtonTitle){
+	  	image.setAttribute('src',lastPageImageUrl)
+	  	node.setAttribute("class","fileDiv fileType-folder fileName-"+fileName);
+	  }else if (fileName.indexOf(".")>=0) {
 	  	image.setAttribute('src',fileImageUrl);
 	  	node.setAttribute("class","fileDiv fileType-file fileName-"+fileName);
 	  }else{
