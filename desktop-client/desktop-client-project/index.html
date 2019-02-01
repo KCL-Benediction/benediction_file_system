@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Benediction File System</title>
+  <link rel="stylesheet" type="text/css" href="./src/css/main.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+  <div class="whole-container" id="app">
+    <div class="left-container">
+      <div class="logo-container">
+        <div class="logo-container_logo-container">
+          <img class="logo-container_logo-container_image" src="./src/images/logo.png">
+        </div>
+        <div class="logo-container_name-container">
+          <p class="logo-container_name-container_name">Benediction</p>
+        </div>
+      </div>
+      <div class="nav-container">
+        <div class="nav-container_list">
+          <div class="nav-container_list_button active" v-on:click="changeMode('Files')">
+            <i class="far fa-file nav-container_list_button_icon"></i>
+            <p class="nav-container_list_button_text">Files</p>
+          </div>
+          <div class="nav-container_list_button" v-on:click="changeMode('Setting')">
+            <i class="fas fa-sliders-h nav-container_list_button_icon"></i>
+            <p class="nav-container_list_button_text">Setting</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-container">
+      <div class="top-container">
+        <p class="top-container_title">{{mode}}</p>
+      </div>
+      <div class="main-container">
+        <div v-if="mode == 'Files'" class="files-container">
+          <div class="file">
+            <img src="./src/images/folder.png" class="file_image"/>
+            <p class="file_title">Family Images</p>
+          </div>
+          <div class="file">
+            <img src="./src/images/folder.png" class="file_image"/>
+            <p class="file_title">School Project</p>
+          </div>
+          <div class="file">
+            <img src="./src/images/folder.png" class="file_image"/>
+            <p class="file_title">My Dogs</p>
+          </div>
+          <div class="file">
+            <img src="./src/images/folder.png" class="file_image"/>
+            <p class="file_title">My Cats</p>
+          </div>
+          <div class="file">
+            <img src="./src/images/folder.png" class="file_image"/>
+            <p class="file_title">My Pigs</p>
+          </div>
+          <div class="file">
+            <img src="./src/images/folder.png" class="file_image"/>
+            <p class="file_title">My Mummies</p>
+          </div>
+          <div class="file">
+            <img src="./src/images/folder.png" class="file_image"/>
+            <p class="file_title">My Videos</p>
+          </div>
+          <div class="file">
+            <img src="./src/images/folder.png" class="file_image"/>
+            <p class="file_title">Documents</p>
+          </div>
+          <div class="file">
+            <img src="./src/images/music_file.png" class="file_image"/>
+            <p class="file_title">Whatever.mp3</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="./src/js/main.js"></script>
+  <script>
+    require('./renderer.js')
+  </script>
+</body>
