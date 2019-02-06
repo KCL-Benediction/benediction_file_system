@@ -104,7 +104,7 @@ public class FileStoreServiceImpl implements FileStoreService {
     public void deleteFile(String filename) throws FileException {
 
         try {
-            Path path = Paths.get(filename);
+            Path path = Paths.get(this.rootDirectory+"/"+filename);
             Files.delete(path);
         } catch (IOException e) {
             throw new FileException("Unable to delete file", e);
