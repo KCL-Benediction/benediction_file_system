@@ -1,0 +1,7 @@
+kcl\group\api\backendservice\exception\FileException.class
+kcl\group\api\backendservice\service\impl\FileStoreServiceImpl.class
+kcl\group\api\backendservice\BackendServiceApplication.class
+kcl\group\api\backendservice\model\FileProperties.class
+kcl\group\api\backendservice\controller\FileController.class
+kcl\group\api\backendservice\config\FileLocationConfig.class
+kcl\group\api\backendservice\service\FileStoreService.class
