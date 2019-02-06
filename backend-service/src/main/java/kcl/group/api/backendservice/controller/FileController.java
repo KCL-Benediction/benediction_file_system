@@ -78,7 +78,7 @@ public class FileController {
         //return model;
     }
 
-	 @DeleteMapping("/delete/{filename:.+}")
+	@DeleteMapping("/delete/{filename:.+}")
     public ResponseEntity deleteFiles(@PathVariable String filename) throws FileException {
         logger.info("File being deleted..... {}", filename);
         fileStoreService.deleteFile(filename);

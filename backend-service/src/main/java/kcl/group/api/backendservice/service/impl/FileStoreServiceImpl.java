@@ -103,7 +103,7 @@ public class FileStoreServiceImpl implements FileStoreService {
     @Override
     public void deleteFile(String filename) throws FileException {
 
-        try {
+        try{
             Path path = Paths.get(this.rootDirectory+"/"+filename);
             Files.delete(path);
         } catch (IOException e) {
