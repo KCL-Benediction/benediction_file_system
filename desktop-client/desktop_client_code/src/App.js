@@ -4,7 +4,6 @@ import AppContainer from "./components/AppContainer";
 import Logo from "./components/Logo";
 import SideBarNav from "./components/SideBarNav";
 import FileDirectory from "./components/FileDirectory";
-// pages
 import Files from "./pages/Files";
 import Setting from "./pages/Setting";
 
@@ -43,6 +42,10 @@ class App extends React.Component {
     } else if (this.state.onPage === "setting") {
       return <Setting />;
     }
+  };
+
+  renderMainView = () => {
+    return <Files />;
   };
 
   render() {
