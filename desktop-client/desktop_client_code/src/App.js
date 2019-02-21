@@ -9,16 +9,24 @@ import FileDirectory from "./components/FileDirectory";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { selectedElement: activeDirectory("NOTHING") };
-
-    // This binding is necessary to make `this` work in the callback
-    this.handleClick = this.handleClick.bind(this);
+    this.state = { 
+      selectedElement: activeDirectory("NOTHING"),
+      onPage: "files"
+    };
   }
 
-  handleClick() {
+  handleClick = () => {
     this.setState(state => ({
       selectedElement: "selectedMenu"
     }));
+  }
+
+  renderTitleString = () =>{
+    if (this.state.onPage === 'files') {
+      return "Files";
+    }else if(this.state.onPage === 'setting'){
+      return "Setting";
+    }
   }
 
   render() {
@@ -34,9 +42,9 @@ class App extends React.Component {
           </div>
         </div>
         <div className="right-container">
-          <FileDirectory />
+          <FileDirectory title={this.renderTitleString()}/>
           <div className="main-container">
-            <div v-if="mode == 'Files'" className="files-container">
+            <div className="files-container">
               <ClickableFileElement image="folder.png" title="Family Images" />
               <ClickableFileElement image="folder.png" title="School Project" />
               <ClickableFileElement image="folder.png" title="My Cats" />
