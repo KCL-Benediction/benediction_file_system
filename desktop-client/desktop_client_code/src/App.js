@@ -4,7 +4,9 @@ import AppContainer from "./components/AppContainer";
 import Logo from "./components/Logo";
 import SideBarNav from "./components/SideBarNav";
 import FileDirectory from "./components/FileDirectory";
+// pages
 import Files from "./pages/Files";
+import Setting from "./pages/Setting";
 
 class App extends React.Component {
   constructor(props) {
@@ -21,6 +23,12 @@ class App extends React.Component {
     }));
   }
 
+  changePage = (page) =>{
+    this.setState({
+      onPage: page
+    })
+  }
+
   renderTitleString = () =>{
     if (this.state.onPage === 'files') {
       return "Files";
@@ -29,8 +37,12 @@ class App extends React.Component {
     }
   }
 
-  renderMainView = () =>{
-    return(<Files/>)
+  renderMainPage = () =>{
+    if (this.state.onPage === 'files') {
+      return(<Files/>)
+    }else if(this.state.onPage === 'setting'){
+      return(<Setting/>)
+    }
   }
 
   render() {
@@ -41,13 +53,13 @@ class App extends React.Component {
           <Logo />
           <div className="nav-container">
             <div className="nav-container_list">
-              <SideBarNav />
+              <SideBarNav changePage={this.changePage} />
             </div>
           </div>
         </div>
         <div className="right-container">
           <FileDirectory title={this.renderTitleString()}/>
-          {this.renderMainView()}
+          {this.renderMainPage()}
         </div>
       </AppContainer>
     );
