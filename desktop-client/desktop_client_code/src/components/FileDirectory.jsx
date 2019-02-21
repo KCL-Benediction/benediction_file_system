@@ -5,7 +5,9 @@ class FileDirectory extends React.Component {
   render() {
     return (
       <div className="top-container">
-        <p className="top-container_title" />
+        <p className="top-container_title">
+        	{this.props.title}
+        </p>
       </div>
     );
   }
