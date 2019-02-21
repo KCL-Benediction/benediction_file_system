@@ -1,10 +1,10 @@
 import React from "react";
 import "./css/main.css";
-import ClickableFileElement from "./components/ClickableFileElement";
 import AppContainer from "./components/AppContainer";
 import Logo from "./components/Logo";
 import SideBarNav from "./components/SideBarNav";
 import FileDirectory from "./components/FileDirectory";
+import Files from "./pages/Files";
 
 class App extends React.Component {
   constructor(props) {
@@ -29,6 +29,10 @@ class App extends React.Component {
     }
   }
 
+  renderMainView = () =>{
+    return(<Files/>)
+  }
+
   render() {
     return (
       //jsx
@@ -43,21 +47,7 @@ class App extends React.Component {
         </div>
         <div className="right-container">
           <FileDirectory title={this.renderTitleString()}/>
-          <div className="main-container">
-            <div className="files-container">
-              <ClickableFileElement image="folder.png" title="Family Images" />
-              <ClickableFileElement image="folder.png" title="School Project" />
-              <ClickableFileElement image="folder.png" title="My Cats" />
-              <ClickableFileElement image="folder.png" title="My Dogs" />
-              <ClickableFileElement image="folder.png" title="Documents" />
-              <ClickableFileElement image="folder.png" title="Work" />
-              <ClickableFileElement image="folder.png" title="Videos" />
-              <ClickableFileElement
-                image="music_file.png"
-                title="Whatever.mp3"
-              />
-            </div>
-          </div>
+          {this.renderMainView()}
         </div>
       </AppContainer>
     );
