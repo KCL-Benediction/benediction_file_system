@@ -11,7 +11,7 @@ import Setting from "./pages/Setting";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       selectedElement: activeDirectory("NOTHING"),
       onPage: "files"
     };
@@ -21,29 +21,29 @@ class App extends React.Component {
     this.setState(state => ({
       selectedElement: "selectedMenu"
     }));
-  }
+  };
 
-  changePage = (page) =>{
+  changePage = page => {
     this.setState({
       onPage: page
-    })
-  }
+    });
+  };
 
-  renderTitleString = () =>{
-    if (this.state.onPage === 'files') {
+  renderTitleString = () => {
+    if (this.state.onPage === "files") {
       return "Files";
-    }else if(this.state.onPage === 'setting'){
+    } else if (this.state.onPage === "setting") {
       return "Setting";
     }
-  }
+  };
 
-  renderMainPage = () =>{
-    if (this.state.onPage === 'files') {
-      return(<Files/>)
-    }else if(this.state.onPage === 'setting'){
-      return(<Setting/>)
+  renderMainPage = () => {
+    if (this.state.onPage === "files") {
+      return <Files />;
+    } else if (this.state.onPage === "setting") {
+      return <Setting />;
     }
-  }
+  };
 
   render() {
     return (
@@ -58,7 +58,8 @@ class App extends React.Component {
           </div>
         </div>
         <div className="right-container">
-          <FileDirectory title={this.renderTitleString()}/>
+          <FileDirectory title={this.renderTitleString()} />
+
           {this.renderMainPage()}
         </div>
       </AppContainer>
