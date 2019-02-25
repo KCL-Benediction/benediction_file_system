@@ -3,8 +3,13 @@ var router = express.Router();
 var fs = require("fs");
 var randomstring = require("randomstring");
 var multer = require('multer');
-var upload = multer({ dest: './temp/' });
-/* GET home page. */
+var upload = multer({ 
+	dest: './temp/',
+	onFileUploadStart: (file)=>{
+		console.log(file);
+	}
+});
+
 
 // get files
 router.get('/get_all_file_details',upload.array(), (req, res) => {
