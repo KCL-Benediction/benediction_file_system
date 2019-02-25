@@ -24,10 +24,9 @@ var wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {});
-  ws.send('Hi there, I am a WebSocket server');
+  ws.send(JSON.stringify({event:"connected"}));
 });
-
-
+app.locals.wss = wss;
 /**
  * Listen on provided port, on all network interfaces.
  */
