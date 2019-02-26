@@ -7,6 +7,7 @@ var app = require('./../app');
 var upload = multer({ 
 	dest: './temp/'
 });
+const baseAPI = 'http://51.140.187.17';
 
 
 module.exports = (wss) =>{ 
@@ -18,7 +19,7 @@ module.exports = (wss) =>{
 			for (file_id in file_dictionary) {
 				var file = file_dictionary[file_id];
 				file['file_id'] = file_id;
-				file['url'] = '/download_a_file?file_id='+file_id;
+				file['url'] = baseAPI + '/download_a_file?file_id='+file_id;
 				files.push(file)
 			}
 			return res.send({result: true, files: files})
@@ -108,7 +109,7 @@ module.exports = (wss) =>{
 	    onFileUploadStart: function (file) {
 	        // recentFile = file;
 	        // recentFile.finished = false;
-	        // console.log(file.originalname + ' is starting ...')
+	        console.log(file.originalname + ' is starting ...')
 	    },
 	    onFileUploadComplete: function (file) {
 	        // recentFile.finished = true;
@@ -176,7 +177,7 @@ module.exports = (wss) =>{
 							send_websocket_event({
 							    "event": "file_update",
 							    "file_name": new_file_dictionary[file_id]['file_name'],
-							    "downloadLink": '/download_a_file?file_id=' + file_id,
+							    "downloadLink": baseAPI + '/download_a_file?file_id=' + file_id,
 							    "fileVersion": new_file_dictionary[file_id]['version'],
 							    "file_id": file_id
 							})
