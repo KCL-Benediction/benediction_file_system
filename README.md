@@ -14,6 +14,12 @@ npm start
 
 ## Installation for server side application
 
+use backend_express
+
+```bash
+npm install
+npm start
+```
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
