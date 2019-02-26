@@ -7,7 +7,7 @@ var app = require('./../app');
 var upload = multer({ 
 	dest: './temp/'
 });
-const baseAPI = 'http://51.140.187.17';
+const baseAPI = 'http://52.151.113.157';
 
 
 module.exports = (wss) =>{ 
@@ -104,17 +104,7 @@ module.exports = (wss) =>{
 	// upload a file
 	router.post(
 		'/upload_a_file',
-		multer({ 
-			dest: './temp/',
-	    onFileUploadStart: function (file) {
-	        // recentFile = file;
-	        // recentFile.finished = false;
-	        console.log(file.originalname + ' is starting ...')
-	    },
-	    onFileUploadComplete: function (file) {
-	        // recentFile.finished = true;
-	    }
-		}).single('file'), 
+		upload.single('file'), 
 		(req, res) => {
 			fs.readFile("./files/files.json","utf-8",(error, content)=>{
 				var file_dictionary = JSON.parse(content);
