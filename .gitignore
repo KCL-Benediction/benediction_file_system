@@ -79,3 +79,6 @@ typings/
 
 # DynamoDB Local files
 .dynamodb/
+
+# File Folder
+backend_express/files

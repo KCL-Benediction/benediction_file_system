@@ -18,7 +18,7 @@ module.exports = (wss) =>{
 			for (file_id in file_dictionary) {
 				var file = file_dictionary[file_id];
 				file['file_id'] = file_id;
-				file['url'] = '/download_a_file?file_id=file_id';
+				file['url'] = '/download_a_file?file_id='+file_id;
 				files.push(file)
 			}
 			return res.send({result: true, files: files})
@@ -101,78 +101,91 @@ module.exports = (wss) =>{
 	})
 
 	// upload a file
-	router.post('/upload_a_file',upload.single('file'), (req, res) => {
-		fs.readFile("./files/files.json","utf-8",(error, content)=>{
-			var file_dictionary = JSON.parse(content);
-			var uploadedFile = req.file;
-			var type = req.body.type;
-			var file_name = req.body.file_name;
-			var file_id = req.body.file_id;
-			if (!uploadedFile) {
-				return res.send({result: false, reason: 'no file received'});
-			}else if (type == 'new') {
-				if (!file_name) {
-					remove_file(uploadedFile)
-					return res.send({result: false, reason: "the request missed some data"});
-				}
-				var file_name_conflict = false;
-				for (file_id in file_dictionary) {
-					if(file_dictionary[file_id]['file_name'] == file_name){
-						file_name_conflict = true;
-						break
+	router.post(
+		'/upload_a_file',
+		multer({ 
+			dest: './temp/',
+	    onFileUploadStart: function (file) {
+	        recentFile = file;
+	        recentFile.finished = false;
+	        console.log(file.originalname + ' is starting ...')
+	    },
+	    onFileUploadComplete: function (file) {
+	        recentFile.finished = true;
+	    }
+		}).single('file'), 
+		(req, res) => {
+			fs.readFile("./files/files.json","utf-8",(error, content)=>{
+				var file_dictionary = JSON.parse(content);
+				var uploadedFile = req.file;
+				var type = req.body.type;
+				var file_name = req.body.file_name;
+				var file_id = req.body.file_id;
+				if (!uploadedFile) {
+					return res.send({result: false, reason: 'no file received'});
+				}else if (type == 'new') {
+					if (!file_name) {
+						remove_file(uploadedFile)
+						return res.send({result: false, reason: "the request missed some data"});
 					}
-				}
-				if (file_name_conflict) {
-					remove_file(uploadedFile)
-					return res.send({result: false, reason: "file name confilct"})
-				}else{
-					var new_id = randomstring.generate();
-					var new_file_dictionary = file_dictionary;
-					file_id = new_id;
-					new_file_dictionary[new_id] = {
-						file_name: file_name,
-						version: 1,
-						locked: false
+					var file_name_conflict = false;
+					for (file_id in file_dictionary) {
+						if(file_dictionary[file_id]['file_name'] == file_name){
+							file_name_conflict = true;
+							break
+						}
 					}
-				}
-			}else if(type == 'update'){
-				if (!file_id) {
-					return res.send({result: false, reason: "the request missed some data"});
-				}			
-				if(!file_dictionary[file_id]){
-					remove_file(uploadedFile)
-					return res.send({result: false, reason: "no such a file"})
-				}else if (file_dictionary[file_id]['locked']) {
-					remove_file(uploadedFile)
-					return res.send({result: false, reason: "file locked"})
+					if (file_name_conflict) {
+						remove_file(uploadedFile)
+						return res.send({result: false, reason: "file name confilct"})
+					}else{
+						var new_id = randomstring.generate();
+						var new_file_dictionary = file_dictionary;
+						file_id = new_id;
+						new_file_dictionary[new_id] = {
+							file_name: file_name,
+							version: 1,
+							locked: false
+						}
+					}
+				}else if(type == 'update'){
+					if (!file_id) {
+						return res.send({result: false, reason: "the request missed some data"});
+					}			
+					if(!file_dictionary[file_id]){
+						remove_file(uploadedFile)
+						return res.send({result: false, reason: "no such a file"})
+					}else if (file_dictionary[file_id]['locked']) {
+						remove_file(uploadedFile)
+						return res.send({result: false, reason: "file locked"})
+					}else{
+						var new_file_dictionary = file_dictionary;
+						new_file_dictionary[file_id]['version'] = new_file_dictionary[file_id]['version'] + 1;
+						file_name = new_file_dictionary[file_id]['file_name'];
+					}
 				}else{
-					var new_file_dictionary = file_dictionary;
-					new_file_dictionary[file_id]['version'] = new_file_dictionary[file_id]['version'] + 1;
-					file_name = new_file_dictionary[file_id]['file_name'];
+					remove_file(uploadedFile)
+					return res.send({result: false, reason: "type should be 'update' or 'new'"})
 				}
-			}else{
-				remove_file(uploadedFile)
-				return res.send({result: false, reason: "type should be 'update' or 'new'"})
-			}
-			fs.rename('./temp/'+uploadedFile.filename, './files/' + new_file_dictionary[file_id]['file_name'], (error)=>{
-				remove_file(uploadedFile);
-				if (error) {
-					return res.send({result: false, reason: "error on changing location on the server", error:error})
-				}else{
-		    	fs.writeFile("./files/files.json", JSON.stringify(new_file_dictionary),()=>{
-						send_websocket_event({
-						    "event": "file_update",
-						    "file_name": new_file_dictionary[file_id]['file_name'],
-						    "downloadLink": '/download_a_file?file_id=' + file_id,
-						    "fileVersion": new_file_dictionary[file_id]['version'],
-						    "file_id": file_id
-						})
-		    		new_file_dictionary[file_id]['file_id'] = file_id;
-		    		return res.send({result: true, file: new_file_dictionary[file_id]});
-		    	})
-				}
+				fs.rename('./temp/'+uploadedFile.filename, './files/' + new_file_dictionary[file_id]['file_name'], (error)=>{
+					remove_file(uploadedFile);
+					if (error) {
+						return res.send({result: false, reason: "error on changing location on the server", error:error})
+					}else{
+			    	fs.writeFile("./files/files.json", JSON.stringify(new_file_dictionary),()=>{
+							send_websocket_event({
+							    "event": "file_update",
+							    "file_name": new_file_dictionary[file_id]['file_name'],
+							    "downloadLink": '/download_a_file?file_id=' + file_id,
+							    "fileVersion": new_file_dictionary[file_id]['version'],
+							    "file_id": file_id
+							})
+			    		new_file_dictionary[file_id]['file_id'] = file_id;
+			    		return res.send({result: true, file: new_file_dictionary[file_id]});
+			    	})
+					}
+				})
 			})
-		})
 	})
 
 	function send_websocket_event(data){
