@@ -106,12 +106,12 @@ module.exports = (wss) =>{
 		multer({ 
 			dest: './temp/',
 	    onFileUploadStart: function (file) {
-	        recentFile = file;
-	        recentFile.finished = false;
-	        console.log(file.originalname + ' is starting ...')
+	        // recentFile = file;
+	        // recentFile.finished = false;
+	        // console.log(file.originalname + ' is starting ...')
 	    },
 	    onFileUploadComplete: function (file) {
-	        recentFile.finished = true;
+	        // recentFile.finished = true;
 	    }
 		}).single('file'), 
 		(req, res) => {
