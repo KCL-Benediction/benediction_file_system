@@ -3,16 +3,25 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "electron": "^4.0.6",
     "font-awesome": "^4.7.0",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
     "react-scripts": "2.1.5"
   },
+  "main": "electron-starter.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "nf start -p 3000 && node electron-starter.js",
     "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "electron": "electron .",
+    "electron-start": "node src/start-react",
+    "electron-dev": "ELECTRON_START_URL=http://localhost:3000 electron.",
+    "react-start": "BROWSER=none react-scripts start",
+    "pack": "build --dir",
+    "dist": "npm run build && build",
+    "postinstall": "install-app-deps"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -22,5 +31,13 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "electron-builder": "^20.38.5"
+  },
+  "build": {
+    "directories": {
+      "buildResources": "public"
+    }
+  }
 }
