@@ -1,57 +1,74 @@
 import React from "react";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import "./css/main.css";
-import ClickableFileElement from "./components/ClickableFileElement";
 import AppContainer from "./components/AppContainer";
 import Logo from "./components/Logo";
 import SideBarNav from "./components/SideBarNav";
 import FileDirectory from "./components/FileDirectory";
+import Files from "./pages/Files";
+import Setting from "./pages/Setting";
+import Login from "./components/Login";
+import Signup from "./components/Signup";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { selectedElement: activeDirectory("NOTHING") };
-
-    // This binding is necessary to make `this` work in the callback
-    this.handleClick = this.handleClick.bind(this);
+    this.state = {
+      selectedElement: activeDirectory("NOTHING"),
+      onPage: "files"
+    };
   }
 
-  handleClick() {
+  handleClick = () => {
     this.setState(state => ({
       selectedElement: "selectedMenu"
     }));
-  }
+  };
+
+  changePage = page => {
+    this.setState({
+      onPage: page
+    });
+  };
+
+  renderTitleString = () => {
+    if (this.state.onPage === "files") {
+      return "Files";
+    } else if (this.state.onPage === "setting") {
+      return "Setting";
+    }
+  };
+
+  renderMainPage = () => {
+    if (this.state.onPage === "files") {
+      return <Files />;
+    } else if (this.state.onPage === "setting") {
+      return <Setting />;
+    }
+  };
 
   render() {
     return (
-      //jsx
-      <AppContainer>
-        <div className="left-container">
-          <Logo />
-          <div className="nav-container">
-            <div className="nav-container_list">
-              <SideBarNav />
+      <BrowserRouter>
+        <Switch>
+          <Route path="/Login" component={Login} />
+          <Route path="/Signup" component={Signup} />
+          <AppContainer>
+            <div className="left-container">
+              <Logo />
+              <div className="nav-container">
+                <div className="nav-container_list">
+                  <SideBarNav changePage={this.changePage} />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="right-container">
-          <FileDirectory />
-          <div className="main-container">
-            <div v-if="mode == 'Files'" className="files-container">
-              <ClickableFileElement image="folder.png" title="Family Images" />
-              <ClickableFileElement image="folder.png" title="School Project" />
-              <ClickableFileElement image="folder.png" title="My Cats" />
-              <ClickableFileElement image="folder.png" title="My Dogs" />
-              <ClickableFileElement image="folder.png" title="Documents" />
-              <ClickableFileElement image="folder.png" title="Work" />
-              <ClickableFileElement image="folder.png" title="Videos" />
-              <ClickableFileElement
-                image="music_file.png"
-                title="Whatever.mp3"
-              />
+            <div className="right-container">
+              <FileDirectory title={this.renderTitleString()} />
+              {this.renderMainPage()}
             </div>
-          </div>
-        </div>
-      </AppContainer>
+          </AppContainer>
+        </Switch>
+      </BrowserRouter>
     );
   }
 }
