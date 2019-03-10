@@ -6,11 +6,17 @@ class SideBarNav extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <div className="nav-container_list_button">
+        <div 
+          className="nav-container_list_button"
+          onClick={()=>this.props.changePage('files')}
+        >
           <i className="far fa-file nav-container_list_button_icon" />
           <Main mode="Files" />
         </div>
-        <div className="nav-container_list_button">
+        <div 
+          className="nav-container_list_button"
+          onClick={()=>this.props.changePage('setting')}
+        >
           <i className="fas fa-sliders-h nav-container_list_button_icon" />
           <Main mode="Settings" />
         </div>

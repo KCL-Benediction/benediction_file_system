@@ -1,155 +1,158 @@
-html, 
+html,
 body {
-    height: 100%;
-    margin: 0;
+  height: 100%;
+  margin: 0;
 }
 /* main layout */
 .whole-container {
-    background: #e5e5e5;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-    display: flex;
+  background: #e5e5e5;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
 }
 .left-container {
-    width: 20%;
-    background: #3a2868;
-    max-width: 230px;
-    min-width: 200px;
+  width: 20%;
+  background: #3a2868;
+  max-width: 230px;
+  min-width: 200px;
 }
-.right-container{
-		flex: 1;
+.right-container {
+  flex: 1;
 }
 .top-container {
-    background: #ebebeb;
-    height: 80px;
+  background: #ebebeb;
+  height: 80px;
 }
 .main-container {
-    flex: 1;
-    overflow: scroll;
-    height: calc(100% - 80px);
+  position: absolute;
+  z-index: 0;
+  flex: 1;
+  overflow-y: scroll;
+  height: calc(100% - 100px);
+  width: 85%;
 }
 .logo-container {
-    background: #312451;
-    height: 100px;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background: #312451;
+  height: 100px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .nav-container {
-    flex: 1;
-    overflow: scroll;
-    height: calc(100% - 80px);
+  flex: 1;
 }
 .top-container {
-    background: #ebebeb;
-    height: 100px;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    padding-left: 40px;
+  background: #ebebeb;
+  height: 100px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 40px;
 }
 
 /* logo */
 .logo-container_name-container {
-    background: #e5e5e5;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    width: 80%;
-    padding: 6px 0;
-    border-radius: 20px;
-    position: absolute;
-    bottom: -20px;
+  background: #e5e5e5;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 80%;
+  padding: 6px 0;
+  border-radius: 20px;
+  position: absolute;
+  bottom: -20px;
 }
 p.logo-container_name-container_name {
-    margin: 0;
-    color: #3a2868;
-    font-weight: 900;
-    font-size: 20px;
+  margin: 0;
+  color: #3a2868;
+  font-weight: 900;
+  font-size: 20px;
 }
 .logo-container_logo-container {
-    width: 110px;
-    height: 100px;
-    border-radius: 220px 220px 0 0;
-    background: #fff;
-    margin-top: 29px;
-    display: flex;
-    justify-content: center;
-    align-content: center;
+  width: 110px;
+  height: 100px;
+  border-radius: 220px 220px 0 0;
+  background: #fff;
+  margin-top: 29px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
 }
 img.logo-container_logo-container_image {
-    width: 70px;
-    height: 70px;
-    margin-top: 15px;
+  width: 70px;
+  height: 70px;
+  margin-top: 15px;
 }
 
 /* nav */
 .nav-container_list {
-    margin-top: 80px;
+  margin-top: 80px;
 }
 .nav-container_list_button {
-    display: flex;
-    height: 100px;
-    justify-content: flex-start;
-    align-items: center;
-    padding-left: 15%;
-    margin-left: 5%;
-    cursor: pointer;
+  display: flex;
+  height: 100px;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 15%;
+  margin-left: 5%;
+  cursor: pointer;
 }
-.nav-container_list_button:hover{
-	background: #2f224f;
+.nav-container_list_button:hover {
+  background: #2f224f;
 }
-.nav-container_list_button.active{
-	background: #2f224f;
+.nav-container_list_button.active {
+  background: #2f224f;
 }
 .nav-container_list_button_icon {
-    color: #d3c8f0;
-    font-size: 13px;
-    margin-right: 10px;
-    position: relative;
+  color: #d3c8f0;
+  font-size: 13px;
+  margin-right: 10px;
+  position: relative;
 }
 p.nav-container_list_button_text {
-    color: #d3c8f0;
-    font-size: 15px;
+  color: #d3c8f0;
+  font-size: 15px;
 }
 
 /* top bar */
 p.top-container_title {
-    margin: 0;
-    color: #222028;
-    font-size: 20px;
-    font-weight: 900;
+  margin: 0;
+  color: #222028;
+  font-size: 20px;
+  font-weight: 900;
 }
 
 /* files */
 .files-container {
-    display: flex;
-    margin-top: 10px;
-    margin-left: 40px;
-    flex-wrap: wrap;
+  display: flex;
+  margin-top: 10px;
+  margin-left: 40px;
+  flex-wrap: wrap;
+  position: fixed;
+  z-index: 0;
 }
 
 .file {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 150px;
-    height: 150px;
-    cursor: pointer;
-    border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  cursor: pointer;
+  border-radius: 10px;
 }
 .file:hover {
-    background: gainsboro
+  background: gainsboro;
 }
 img.file_image {
-    width: 50px;
-    height: 50px;
+  width: 50px;
+  height: 50px;
 }
 p.file_title {
-    font-size: 12px;
-    color: #222028;
-    margin: 9px;
+  font-size: 12px;
+  color: #222028;
+  margin: 9px;
 }
