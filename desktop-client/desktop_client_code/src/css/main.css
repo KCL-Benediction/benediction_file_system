@@ -28,9 +28,8 @@ body {
   position: absolute;
   z-index: 0;
   flex: 1;
-  overflow-y: scroll;
-  height: calc(100% - 100px);
   width: 85%;
+  height: 80%;
 }
 .logo-container {
   background: #312451;
@@ -132,6 +131,23 @@ p.top-container_title {
   flex-wrap: wrap;
   position: fixed;
   z-index: 0;
+  overflow-y: auto;
+}
+.filePage {
+  display: flex;
+  flex-wrap: wrap;
+  position: fixed;
+  background-color: #e5e5e5;
+  width: 85%;
+  height: 90%;
+  z-index: 0;
+}
+
+.backButton {
+  width: 70px;
+  height: 30px;
+  position: absolute;
+  right: 0;
 }
 
 .file {

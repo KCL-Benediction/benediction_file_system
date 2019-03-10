@@ -3,9 +3,9 @@ import "../css/main.css";
 
 class ClickableFileElement extends React.Component {
   render() {
-    const { image, title } = this.props;
+    const { image, title, click } = this.props;
     return (
-      <div className="file">
+      <div className="file" onClick={click}>
         <img
           src={require("../images/" + image)}
           className="file_image"
