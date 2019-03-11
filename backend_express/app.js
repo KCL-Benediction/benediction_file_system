@@ -10,6 +10,7 @@ var upload = multer();
 var debug = require('debug')('backend:server');
 var http = require('http');
 var WebSocket = require('ws');
+var mongoose = require('mongoose');
 // app
 var app = express();
 
@@ -25,6 +26,15 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// db
+// Set up mongoose connection
+
+var dev_db_url = 'mongodb://benediction:benediction2019gogo@ds159185.mlab.com:59185/benediction';
+var mongoDB = process.env.MONGODB_URI || dev_db_url;
+mongoose.connect(mongoDB);
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 // error handlers
 
