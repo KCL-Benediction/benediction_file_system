@@ -1,0 +1,21 @@
+const Joi = require('joi')
+module.exports = [
+  {
+    method: 'POST',
+    path: '/api/login',
+    handler: handlers.login,
+    config: { auth: false },
+    validate: {
+      payload: {
+        email: Joi.string().email().required(),
+        password: Joi.string().required(),
+      },
+    },
+  },
+  {
+    method: 'GET',
+    path: '/api/logout',
+    handler: handlers.logout,
+    config: { auth: false },
+  },  
+]
