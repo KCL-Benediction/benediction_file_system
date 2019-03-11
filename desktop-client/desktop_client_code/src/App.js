@@ -35,7 +35,7 @@ class App extends React.Component {
     if (this.state.onPage === "files") {
       return "Files";
     } else if (this.state.onPage === "setting") {
-      return "Setting";
+      return "Settings";
     }
   };
 
