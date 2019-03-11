@@ -29,3 +29,4 @@ fileMonitor.on("fileRemoved", function (filePath) {
 // Let us know that directory monitoring is happening and where.
 console.log("Directory Monitoring of " + fileMonitor.root + " has started");
   
+module.exports = {};
