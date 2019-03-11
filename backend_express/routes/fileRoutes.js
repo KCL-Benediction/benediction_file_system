@@ -32,7 +32,16 @@ module.exports = (wss) =>{
 			var file_dictionary = JSON.parse(content);
 			var file_id = req.body.file_id;
 			var file_new_name = req.body.file_new_name;
-			if (!file_id || !file_new_name) {
+			var file_name_conflict = false;
+			for (file_id in file_dictionary) {
+				if(file_dictionary[file_id]['file_name'] == file_name){
+					file_name_conflict = true;
+					break
+				}
+			}
+			if (file_name_conflict) {
+				return res.send({result: false, reason: "file name confilct"})
+			}else if (!file_id || !file_new_name) {
 				return res.send({result: false, reason: "the request missed some data"});
 			}else if (file_id in file_dictionary) {
 				fs.rename('./files/'+file_dictionary[file_id]['file_name'], './files/'+file_new_name, function(err) {
