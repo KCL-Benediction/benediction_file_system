@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "braces": "^2.3.2",
+    "electron": "^4.0.8",
     "font-awesome": "^4.7.0",
     "prop-types-extra": "^1.1.0",
     "react": "^16.8.3",
