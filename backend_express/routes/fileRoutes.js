@@ -4,13 +4,36 @@ var fs = require("fs");
 var randomstring = require("randomstring");
 var multer = require('multer');
 var app = require('./../app');
-var upload = multer({ 
-	dest: './temp/'
-});
 const baseAPI = 'http://52.151.113.157';
 
-
 module.exports = (wss) =>{ 
+
+	var upload = multer({ 
+		dest: './temp/',
+	  fileFilter: function fileFilter (req, file, cb) {
+	  	if (req.url == '/upload_a_file') {
+	  		if (req.body.file_id) {
+					send_websocket_event({
+					    "event": "file_locked",
+					    "file_id": req.body.file_id
+					})
+					fs.readFile("./files/files.json","utf-8",(error, content)=>{
+						var file_dictionary = JSON.parse(content);
+						if (req.body.file_id in file_dictionary) {
+							file_dictionary[req.body.file_id]['locked'] = true;
+							fs.writeFile("./files/files.json", JSON.stringify(file_dictionary, null, 4),()=>{
+								console.log("file locked", file_dictionary);
+								req.lockedByMe = true;
+								return cb(null, true)
+							})
+						}
+					});
+	  		}else{
+					return cb(null, true)
+				}
+	  	}  	
+		}
+	});
 	// get files
 	router.get('/get_all_file_details',upload.array(), (req, res) => {
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
@@ -50,7 +73,7 @@ module.exports = (wss) =>{
 				    	return res.send({result: false, reason: "error on changing the name on server"});
 				    }else{
 				    	file_dictionary[file_id]['file_name'] = file_new_name;
-				    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary),()=>{
+				    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary, null, 4),()=>{
 								send_websocket_event({
 								    "event": "file_name_changed",
 								    "file_name": file_dictionary[file_id]['file_name'],
@@ -80,7 +103,7 @@ module.exports = (wss) =>{
 			    	return res.send({result: false, reason: "error on delting the file on server"});
 			    }else{
 			    	delete file_dictionary[file_id];
-			    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary),()=>{
+			    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary, null, 4),()=>{
 							send_websocket_event({
 							    "event": "file_deleted",
 							    "file_id": file_id
@@ -155,13 +178,15 @@ module.exports = (wss) =>{
 					if(!file_dictionary[file_id]){
 						remove_file(uploadedFile)
 						return res.send({result: false, reason: "no such a file"})
-					}else if (file_dictionary[file_id]['locked']) {
+					}else if (file_dictionary[file_id]['locked'] && !req.lockedByMe) {
 						remove_file(uploadedFile)
 						return res.send({result: false, reason: "file locked"})
 					}else{
 						var new_file_dictionary = file_dictionary;
 						new_file_dictionary[file_id]['version'] = new_file_dictionary[file_id]['version'] + 1;
+						new_file_dictionary[file_id]['locked'] = false;
 						file_name = new_file_dictionary[file_id]['file_name'];
+						console.log("new_file_dictionary", new_file_dictionary);
 					}
 				}else{
 					remove_file(uploadedFile)
@@ -172,14 +197,19 @@ module.exports = (wss) =>{
 					if (error) {
 						return res.send({result: false, reason: "error on changing location on the server", error:error})
 					}else{
-			    	fs.writeFile("./files/files.json", JSON.stringify(new_file_dictionary),()=>{
+			    	fs.writeFile("./files/files.json", JSON.stringify(new_file_dictionary, null, 4),()=>{
 							send_websocket_event({
 							    "event": "file_update",
 							    "file_name": new_file_dictionary[file_id]['file_name'],
 							    "downloadLink": baseAPI + '/download_a_file?file_id=' + file_id,
 							    "fileVersion": new_file_dictionary[file_id]['version'],
 							    "file_id": file_id
+							});
+							send_websocket_event({
+							    "event": "file_unlocked",
+							    "file_id": file_id
 							})
+			    		new_file_dictionary[file_id]['download'] = baseAPI + '/download_a_file?file_id='+file_id;
 			    		new_file_dictionary[file_id]['file_id'] = file_id;
 			    		return res.send({result: true, file: new_file_dictionary[file_id]});
 			    	})
@@ -190,7 +220,7 @@ module.exports = (wss) =>{
 
 	function send_websocket_event(data){
 		wss.clients.forEach(function(client) {
-      client.send(JSON.stringify(data));
+      client.send(JSON.stringify(data, null, 4));
     });
 	}
 
