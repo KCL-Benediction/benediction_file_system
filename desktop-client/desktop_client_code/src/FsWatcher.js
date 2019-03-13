@@ -8,7 +8,8 @@ fileMonitor.start(500);
 
 // log to the console when a file is added.
 fileMonitor.on("fileAdded", function (fileDetail) {
-  console.log("File Added: " + fileDetail.fullPath);
+ // console.log("File Added: " + fileDetail.fullPath);
+  
 });
 
 // Log to the console when a file is changed.
@@ -28,5 +29,4 @@ fileMonitor.on("fileRemoved", function (filePath) {
 
 // Let us know that directory monitoring is happening and where.
 console.log("Directory Monitoring of " + fileMonitor.root + " has started");
-  
-module.exports = {};
+

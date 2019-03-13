@@ -6,13 +6,18 @@
     "braces": "^2.3.2",
     "electron": "^4.0.8",
     "font-awesome": "^4.7.0",
+    "form-data": "^2.3.3",
+    "node-fetch": "^2.3.0",
     "prop-types-extra": "^1.1.0",
     "react": "^16.8.3",
     "react-dom": "^16.8.3",
     "react-dropzone": "^10.0.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.1.5",
-    "save": "^2.3.3"
+    "request": "^2.88.0",
+    "save": "^2.3.3",
+    "superagent": "^4.1.0",
+    "typescript": "^3.3.3333"
   },
   "main": "electron-starter.js",
   "scripts": {
