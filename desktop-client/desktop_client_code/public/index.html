@@ -109,7 +109,7 @@
       // Call the EventEmitter
       events.EventEmitter.call(this);
 
-      
+
       // Gets the parent node of the last folder in the path
       // given and calls selectCurrentNode 
       var selectParentNode = function (dir, suppressEvents) {
@@ -157,14 +157,14 @@
             // get the folder only portion of the passed in file
             var dir = path.dirname(pathToFile);
             var fd = new FileDetail(
-              dir,              
-              pathToFile,                
-              path.basename(pathToFile), 
-              stats.size,      
-              path.extname(pathToFile),  
-              stats.atime,     
-              stats.mtime,      
-              stats.ctime       
+              dir,
+              pathToFile,
+              path.basename(pathToFile),
+              stats.size,
+              path.extname(pathToFile),
+              stats.atime,
+              stats.mtime,
+              stats.ctime
             );
             // get appropriate node of the directoryStructure
             var currentNode = selectCurrentNode(dir, suppressEvents);
@@ -200,34 +200,6 @@
         });
       };
 
-      /* // detectFolderDelete detects if a folder has been deleted.
-      var detectFolderDelete = function (dir, folderName, suppressEvents) {
-        // It is noted in the documentation for node.js fs.Exists method
-        // (http://nodejs.org/api/fs.html#fs_fs_exists_path_callback)
-        // that it is an anachronism. and to just try and open
-        // the file / path and check for errors...
-        // I don't think that's very efficient for what we're trying to 
-        // do here so I'm using the exists method. 
-        // Because of this one day they *might* remove exists. if they
-        // ever do, then we'll have to come back and update this call
-        // to something else.
-        fs.exists(dir, function (exists) {
-          if (!exists) {
-            if (!suppressEvents) {
-              self.emit("folderRemoved", dir);
-            }
-            // if the folder doesn't exist, find the folder's parent
-            // node then the folder object (and all of its children objects.
-            // from the directoryStructure. unfortunatley doint this means
-            // that we will never get an event for everything deleted.
-            // downstream... might want to add a method to raise those events
-            // later.
-            var currentNode = selectParentNode(dir, suppressEvents);
-            delete currentNode[folderName];
-          }
-        });
-      }; */
-
       // detectFileDelete detect if a file has been deleted from the local folder.
       var detectFileDelete = function (fd, suppressEvents) {
         fs.exists(fd.fullPath, function (exists) {
@@ -246,7 +218,7 @@
         detectDeletes detects deletions in the local directory,
         routes file deletes to its handler method
       */
-      var detectDeletes = function (dir, suppressEvents) { 
+      var detectDeletes = function (dir, suppressEvents) {
         var currentNode = selectCurrentNode(dir, suppressEvents);
         // loop through the filesin the current node
         for (var key in currentNode) {
@@ -254,12 +226,12 @@
             // route the the file delete detector
             detectFileDelete(currentNode[key], suppressEvents);
           } else {
-           // detectFolderDelete(dir + path.sep + key, key, suppressEvents);
+            // detectFolderDelete(dir + path.sep + key, key, suppressEvents);
           }
         }
       };
 
-      
+
       // scanDirectory scans a given directory and attempts
       // to record each file in the directory.
       this.scanDirectory = function (dir, suppressEvents) {
@@ -304,7 +276,14 @@
         }
         // Initial scan of the directory... suppresses events for the first
         // scan through. The next scan will be after interval
+        //can be used to sync the initial files found in the directory 
         self.scanDirectory(self.root, self.suppressInitialEvents);
+        //get all files in the directory at start up
+        fs.readdir(self.root, (err, files) => {
+          files.forEach(file => {
+            //console.log(file);
+          });
+        });
       };
       this.stop = function () {
         clearTimeout(self.timer);
@@ -323,37 +302,54 @@
 
     // sync local newly added file with server folder.
     fileMonitor.on("fileAdded", function (fileDetail) {
-      console.log("File Dir: " + fileDetail.fullPath);
-      console.log("File Name: " + fileDetail.fileName);
-      console.log(fileMonitor.root + '/' + fileDetail.fileName);
+      console.log("File: ", fileDetail.fileName, " has been Added.");
       //upload new file to server folder 
       fileAgent.post('http://52.151.113.157/upload_a_file')
         .field('type', 'new')
         .field('file_name', fileDetail.fileName)
         .attach('file', fileDetail.fullPath)
         .then(function (error, response, body) {
-          console.log('Error :', error); 
-          console.log('statusCode:', response && response.statusCode); 
-          console.log('body:', body); 
+          console.log('Error :', error);
+          console.log('statusCode:', response && response.statusCode);
+          console.log('body:', body);
+          console.log('Addition of new file: ', fileDetail.fileName, ' has been synced with server');
         });
-
     });
 
     // sync with server if file has been changed.
     fileMonitor.on("fileChanged", function (fileDetail, changes) {
-      console.log("File Changed: " + fileDetail.fullPath);
-      for (var key in changes) {
-        console.log("  + " + key + " changed...");
-        console.log("    - From: " + ((changes[key].baseValue instanceof Date) ? changes[key].baseValue.toISOString() : changes[key].baseValue));
-        console.log("    - To  : " + ((changes[key].comparedValue instanceof Date) ? changes[key].comparedValue.toISOString() : changes[key].comparedValue));
-      }
+      console.log("File: ", fileDetail.fileName, " has been changed.");
+
+      fetch('http://52.151.113.157/get_all_file_details')
+        .then(res => res.json())
+        .then(json => {
+          var data = json.files;
+          for (var i = 0; i < data.length; i++) {
+            if (data[i].file_name === fileDetail.fileName) {
+              var fileId = data[i].file_id;
+              fileAgent.post('http://52.151.113.157/upload_a_file')
+                .field('file_id', fileId)
+                .field('type', 'update')
+                .attach('file', fileDetail.fullPath)
+                .then(function (error, response, body) {
+                  console.log('Error :', error);
+                  console.log('statusCode:', response && response.statusCode);
+                  console.log('body:', body);
+                  console.log('File changes to: ', fileDetail.fileName, ' has been synced with server');
+                });
+            }
+          }
+        });
+
     });
 
     // sync with server when file is removed from local folder
     fileMonitor.on("fileRemoved", function (filePath) {
-      console.log("File Deleted: " + filePath);
+      console.log("File: ", filePath, " has been Deleted.");
       var fileDeleted = path.basename(filePath);
       //delete file from server if deleted from local monitored directory
+      //checks whether the file exists on the server first before 
+      //before calling the delete API end-point
       fetch('http://52.151.113.157/get_all_file_details')
         .then(res => res.json())
         .then(json => {
@@ -364,9 +360,10 @@
               fileAgent.post('http://52.151.113.157/delete_a_file')
                 .field('file_id', fileId)
                 .then(function (error, response, body) {
-                  console.log('Error :', error); 
-                  console.log('statusCode:', response && response.statusCode); 
-                  console.log('body:', body); 
+                  console.log('Error :', error);
+                  console.log('statusCode:', response && response.statusCode);
+                  console.log('body:', body);
+                  console.log('Deletion of file: ', fileDeleted, ' has been synced with server');
                 });
             }
           }
@@ -374,7 +371,7 @@
     });
 
     // Local root directory monitoring and synchronising with server.
-    console.log("Local Folder synchronisation and monitoring of " + fileMonitor.root + " has started");
+    console.log("Local Folder synchronisation and monitoring of ", fileMonitor.root, " has started");
   </script>
 </body>
 
