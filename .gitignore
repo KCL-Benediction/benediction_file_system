@@ -81,4 +81,5 @@ typings/
 .dynamodb/
 
 # File Folder
-backend_express/files
+backend_express/files/
+backend_express/files/files.json
