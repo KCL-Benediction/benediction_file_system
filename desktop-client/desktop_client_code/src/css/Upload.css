@@ -3,6 +3,22 @@
   top: 0px;
   left: 0px;
   width: 100%;
-  height: 110%;
+  height: 100%;
   z-index: -1;
+}
+
+.displayFile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  height: 150px;
+  cursor: pointer;
+  border-radius: 10px;
+  align-content: center;
+}
+
+.displayFile:hover {
+  background: gainsboro;
 }
