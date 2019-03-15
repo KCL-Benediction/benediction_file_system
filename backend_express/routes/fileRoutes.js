@@ -5,6 +5,12 @@ var randomstring = require("randomstring");
 var multer = require('multer');
 var app = require('./../app');
 const baseAPI = 'http://52.151.113.157';
+var jwt = require('jsonwebtoken');
+var exjwt = require('express-jwt');
+const authSecret = 'benediction-backend-auth-key';
+const jwtMW = exjwt({
+    secret: authSecret
+});
 
 module.exports = (wss) =>{ 
 
@@ -35,7 +41,11 @@ module.exports = (wss) =>{
 		}
 	});
 	// get files
-	router.get('/get_all_file_details',upload.array(), (req, res) => {
+	router.get(
+		'/get_all_file_details',
+		upload.array(), 
+		jwtMW,
+		(req, res) => {
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var files = [];
@@ -50,7 +60,7 @@ module.exports = (wss) =>{
 	})
 
 	// change_file_names
-	router.post('/change_file_name',upload.array(), (req, res) => {
+	router.post('/change_file_name', jwtMW, upload.array(), (req, res) => {
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var file_id = req.body.file_id;
@@ -90,7 +100,7 @@ module.exports = (wss) =>{
 	})
 
 	// delete a file
-	router.post('/delete_a_file',upload.array(), (req,res)=>{
+	router.post('/delete_a_file', jwtMW, upload.array(), (req,res)=>{
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var file_id = req.body.file_id;
@@ -119,7 +129,7 @@ module.exports = (wss) =>{
 	})
 
 	// download
-	router.get('/download_a_file', (req,res)=>{
+	router.get('/download_a_file', jwtMW,  (req,res)=>{
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var file_id = req.param('file_id');
@@ -137,6 +147,7 @@ module.exports = (wss) =>{
 	router.post(
 		'/upload_a_file',
 		upload.single('file'), 
+		jwtMW, 
 		(req, res) => {
 			fs.readFile("./files/files.json","utf-8",(error, content)=>{
 				var file_dictionary = JSON.parse(content);
