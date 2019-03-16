@@ -16,15 +16,15 @@ class UploadDrop extends React.Component {
   }
 
   handleOnDrop = (files, rejectedFiles) => {
-    // const req = request.post("http://52.151.113.157/upload_a_file");
+    const req = request.post("http://52.151.113.157/upload_a_file");
 
-    // files.forEach(file => {
-    //   req
-    //     .field("type", "new")
-    //     .field("file_name", file.name)
-    //     .attach("file", file);
-    // });
-    // req.end();
+    files.forEach(file => {
+      req
+        .field("type", "new")
+        .field("file_name", file.name)
+        .attach("file", file);
+    });
+    req.end();
 
     if (rejectedFiles && rejectedFiles.length > 0) {
       const currentRejectFile = rejectedFiles[0];
@@ -34,14 +34,14 @@ class UploadDrop extends React.Component {
         console.log("Rejected file:", rejectedFiles);
       }
     } else {
-      console.log(files, " has been uploaded.");
+      // console.log(files, " has been uploaded.");
 
       const currentFile = files[0];
       const fileItem = new FileReader();
       fileItem.addEventListener(
         "load",
         () => {
-          console.log(files[0].name);
+          console.log(files[0].name, "has been uploaded.");
           this.setState({
             imgSrc: fileItem.result,
             title: files[0].name

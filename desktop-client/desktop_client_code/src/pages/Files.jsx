@@ -1,10 +1,10 @@
 import React from "react";
 import "../css/main.css";
-import ClickableFileElement from "./../components/ClickableFileElement";
+// import ClickableFileElement from "./../components/ClickableFileElement";
 import UploadDrop from "./../components/UploadDrop";
 import FilePage from "../pages/FilePage";
-import DisplayUploadedFile from "../components/DisplayUploadedFile";
 import GetServerData from "../components/GetServerData";
+import DownloadFile from "../components/DownloadFile";
 
 class File extends React.Component {
   constructor(props) {
@@ -25,12 +25,13 @@ class File extends React.Component {
     return (
       <div className="main-container">
         <div className="files-container">
-          <ClickableFileElement
+          {/* <ClickableFileElement
             image="folder.png"
             title="Family Images"
             click={this.triggerClickFile}
-          />
+          /> */}
           <GetServerData />
+          <DownloadFile />
           <UploadDrop />
         </div>
 
