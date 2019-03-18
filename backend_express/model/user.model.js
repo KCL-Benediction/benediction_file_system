@@ -11,6 +11,12 @@ let UserSchema = new Schema({
     	type: String, 
     	required: true
     },
+    firstname:{
+        type: String, 
+    },
+    lastname:{
+        type: String, 
+    },
     _id: {
     	type: Schema.Types.ObjectId, 
     	required: true, 
