@@ -2,10 +2,15 @@ import React from "react";
 import "../css/Login.css";
 
 class Login extends React.Component {
-  state = {
-    email: "",
-    password: ""
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      username: "",
+      password: ""
+    };
+  }
+
   handleChange = e => {
     this.setState({
       [e.target.id]: e.target.value
@@ -15,6 +20,9 @@ class Login extends React.Component {
     e.preventDefault();
     console.log(this.state);
   };
+  validateForm() {
+    return this.username > 0 && this.password > 0;
+  }
 
   render() {
     return (
@@ -29,10 +37,10 @@ class Login extends React.Component {
           </span>
           <div className="inputField">
             <input
-              type="email"
-              id="email"
+              type="username"
+              id="username"
               onChange={this.handleChange}
-              placeholder="Email"
+              placeholder="Username"
             />
           </div>
           <div className="inputField">
