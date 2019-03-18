@@ -7,6 +7,7 @@ var exjwt = require('express-jwt');
 const authSecret = 'benediction-backend-auth-key';
 var multer = require('multer');
 var upload = multer({})
+var md5 = require('md5');
 /* Register. */
 router.post('/register', upload.array(), function(req, res, next) {
 	console.log(req.body.username,req.body.password)
@@ -18,7 +19,7 @@ router.post('/register', upload.array(), function(req, res, next) {
   var user = new User(
       {
           username: req.body.username,
-          password: req.body.password,
+          password: md5(req.body.password),
           firstname: req.body.firstname,
           lastname: req.body.lastname,
           _id: objectId
@@ -39,7 +40,7 @@ router.post('/login', upload.array(), function(req, res, next) {
 	var password = req.body.password;
 	User.findOne({
 		username: username,
-		password: password
+		password: md5(password)
 	},function(error, user){
 		if (user) {
 			var token = jwt.sign({
