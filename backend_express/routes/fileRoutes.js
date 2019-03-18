@@ -155,6 +155,7 @@ module.exports = (wss) =>{
 				var type = req.body.type;
 				var file_name = req.body.file_name;
 				var file_id = req.body.file_id;
+				var last_version = req.body.last_version;
 				if (!uploadedFile) {
 					return res.send({result: false, reason: 'no file received'});
 				}else if (type == 'new') {
@@ -192,6 +193,9 @@ module.exports = (wss) =>{
 					}else if (file_dictionary[file_id]['locked'] && !req.lockedByMe) {
 						remove_file(uploadedFile)
 						return res.send({result: false, reason: "file locked"})
+					}else if(file_dictionary['version'] != last_version){
+						remove_file(uploadedFile)
+						return res.send({result: false, reason: "needs to download the newest version first"})
 					}else{
 						var new_file_dictionary = file_dictionary;
 						new_file_dictionary[file_id]['version'] = new_file_dictionary[file_id]['version'] + 1;
