@@ -19,6 +19,8 @@ router.post('/register', upload.array(), function(req, res, next) {
       {
           username: req.body.username,
           password: req.body.password,
+          firstname: req.body.firstname,
+          lastname: req.body.lastname,
           _id: objectId
       }
   );
@@ -47,8 +49,9 @@ router.post('/login', upload.array(), function(req, res, next) {
 				expiresIn: 129600 
 			});
 			return res.send({
-				result:true,
-				token:token
+				result: true,
+				token: token,
+				user: user
 			});
 		}else{
 			return res.send({
