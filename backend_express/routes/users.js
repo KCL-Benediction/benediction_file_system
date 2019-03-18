@@ -29,6 +29,7 @@ router.post('/register', upload.array(), function(req, res, next) {
   	if (error) {
   		return res.send({result: false, error:error})
   	}else{
+  		delete user['password'];
   		return res.send({result: true, user: user})
   	}
   })
@@ -49,6 +50,7 @@ router.post('/login', upload.array(), function(req, res, next) {
 			}, authSecret, {
 				expiresIn: 129600 
 			});
+			delete user['password'];
 			return res.send({
 				result: true,
 				token: token,
