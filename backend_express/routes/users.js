@@ -29,8 +29,8 @@ router.post('/register', upload.array(), function(req, res, next) {
   	if (error) {
   		return res.send({result: false, error:error})
   	}else{
-  		delete user['password'];
-  		return res.send({result: true, user: user})
+  		var responseUser = filterByKey(user,['username', 'firstname', 'lastname']);
+  		return res.send({result: true, user: responseUser})
   	}
   })
 });
@@ -50,11 +50,12 @@ router.post('/login', upload.array(), function(req, res, next) {
 			}, authSecret, {
 				expiresIn: 129600 
 			});
-			delete user['password'];
+			var responseUser = filterByKey(user,['username', 'firstname', 'lastname']);
+			console.log(responseUser);
 			return res.send({
 				result: true,
 				token: token,
-				user: user
+				user: responseUser
 			});
 		}else{
 			return res.send({
@@ -65,6 +66,16 @@ router.post('/login', upload.array(), function(req, res, next) {
 	})
 	
 });
+
+function filterByKey(obj, keys){
+	var newObj = {};
+	for (var key in obj) {
+		if (keys.indexOf(key) >= 0) {
+			newObj[key] = obj[key]
+		}
+	}
+	return newObj;
+}
 
 
 
