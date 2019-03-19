@@ -132,7 +132,7 @@ p.top-container_title {
   position: fixed;
   z-index: 1;
   flex: 1;
-  width: 100%;
+  width: 85%;
   height: 100%;
   overflow-y: auto;
 }
