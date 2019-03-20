@@ -4,15 +4,48 @@ var fs = require("fs");
 var randomstring = require("randomstring");
 var multer = require('multer');
 var app = require('./../app');
-var upload = multer({ 
-	dest: './temp/'
-});
 const baseAPI = 'http://52.151.113.157';
-
+var jwt = require('jsonwebtoken');
+var exjwt = require('express-jwt');
+const authSecret = 'benediction-backend-auth-key';
+const jwtMW = exjwt({
+    secret: authSecret
+});
 
 module.exports = (wss) =>{ 
+
+	var upload = multer({ 
+		dest: './temp/',
+	  fileFilter: function fileFilter (req, file, cb) {
+	  	if (req.url == '/upload_a_file') {
+	  		if (req.body.file_id) {
+					send_websocket_event({
+					    "event": "file_locked",
+					    "file_id": req.body.file_id
+					})
+					fs.readFile("./files/files.json","utf-8",(error, content)=>{
+						var file_dictionary = JSON.parse(content);
+						if (req.body.file_id in file_dictionary) {
+							file_dictionary[req.body.file_id]['locked'] = true;
+							fs.writeFile("./files/files.json", JSON.stringify(file_dictionary, null, 4),()=>{
+								console.log("file locked", file_dictionary);
+								req.lockedByMe = true;
+								return cb(null, true)
+							})
+						}
+					});
+	  		}else{
+					return cb(null, true)
+				}
+	  	}  	
+		}
+	});
 	// get files
-	router.get('/get_all_file_details',upload.array(), (req, res) => {
+	router.get(
+		'/get_all_file_details',
+		upload.array(), 
+		jwtMW,
+		(req, res) => {
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var files = [];
@@ -27,12 +60,21 @@ module.exports = (wss) =>{
 	})
 
 	// change_file_names
-	router.post('/change_file_name',upload.array(), (req, res) => {
+	router.post('/change_file_name', jwtMW, upload.array(), (req, res) => {
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var file_id = req.body.file_id;
 			var file_new_name = req.body.file_new_name;
-			if (!file_id || !file_new_name) {
+			var file_name_conflict = false;
+			for (file_id in file_dictionary) {
+				if(file_dictionary[file_id]['file_name'] == file_name){
+					file_name_conflict = true;
+					break
+				}
+			}
+			if (file_name_conflict) {
+				return res.send({result: false, reason: "file name confilct"})
+			}else if (!file_id || !file_new_name) {
 				return res.send({result: false, reason: "the request missed some data"});
 			}else if (file_id in file_dictionary) {
 				fs.rename('./files/'+file_dictionary[file_id]['file_name'], './files/'+file_new_name, function(err) {
@@ -41,7 +83,7 @@ module.exports = (wss) =>{
 				    	return res.send({result: false, reason: "error on changing the name on server"});
 				    }else{
 				    	file_dictionary[file_id]['file_name'] = file_new_name;
-				    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary),()=>{
+				    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary, null, 4),()=>{
 								send_websocket_event({
 								    "event": "file_name_changed",
 								    "file_name": file_dictionary[file_id]['file_name'],
@@ -58,7 +100,7 @@ module.exports = (wss) =>{
 	})
 
 	// delete a file
-	router.post('/delete_a_file',upload.array(), (req,res)=>{
+	router.post('/delete_a_file', jwtMW, upload.array(), (req,res)=>{
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var file_id = req.body.file_id;
@@ -71,7 +113,7 @@ module.exports = (wss) =>{
 			    	return res.send({result: false, reason: "error on delting the file on server"});
 			    }else{
 			    	delete file_dictionary[file_id];
-			    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary),()=>{
+			    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary, null, 4),()=>{
 							send_websocket_event({
 							    "event": "file_deleted",
 							    "file_id": file_id
@@ -87,7 +129,7 @@ module.exports = (wss) =>{
 	})
 
 	// download
-	router.get('/download_a_file', (req,res)=>{
+	router.get('/download_a_file', jwtMW,  (req,res)=>{
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var file_id = req.param('file_id');
@@ -105,6 +147,7 @@ module.exports = (wss) =>{
 	router.post(
 		'/upload_a_file',
 		upload.single('file'), 
+		jwtMW, 
 		(req, res) => {
 			fs.readFile("./files/files.json","utf-8",(error, content)=>{
 				var file_dictionary = JSON.parse(content);
@@ -112,6 +155,7 @@ module.exports = (wss) =>{
 				var type = req.body.type;
 				var file_name = req.body.file_name;
 				var file_id = req.body.file_id;
+				var last_version = req.body.last_version;
 				if (!uploadedFile) {
 					return res.send({result: false, reason: 'no file received'});
 				}else if (type == 'new') {
@@ -146,13 +190,18 @@ module.exports = (wss) =>{
 					if(!file_dictionary[file_id]){
 						remove_file(uploadedFile)
 						return res.send({result: false, reason: "no such a file"})
-					}else if (file_dictionary[file_id]['locked']) {
+					}else if (file_dictionary[file_id]['locked'] && !req.lockedByMe) {
 						remove_file(uploadedFile)
 						return res.send({result: false, reason: "file locked"})
+					}else if(file_dictionary['version'] != last_version){
+						remove_file(uploadedFile)
+						return res.send({result: false, reason: "needs to download the newest version first"})
 					}else{
 						var new_file_dictionary = file_dictionary;
 						new_file_dictionary[file_id]['version'] = new_file_dictionary[file_id]['version'] + 1;
+						new_file_dictionary[file_id]['locked'] = false;
 						file_name = new_file_dictionary[file_id]['file_name'];
+						console.log("new_file_dictionary", new_file_dictionary);
 					}
 				}else{
 					remove_file(uploadedFile)
@@ -163,14 +212,19 @@ module.exports = (wss) =>{
 					if (error) {
 						return res.send({result: false, reason: "error on changing location on the server", error:error})
 					}else{
-			    	fs.writeFile("./files/files.json", JSON.stringify(new_file_dictionary),()=>{
+			    	fs.writeFile("./files/files.json", JSON.stringify(new_file_dictionary, null, 4),()=>{
 							send_websocket_event({
 							    "event": "file_update",
 							    "file_name": new_file_dictionary[file_id]['file_name'],
 							    "downloadLink": baseAPI + '/download_a_file?file_id=' + file_id,
 							    "fileVersion": new_file_dictionary[file_id]['version'],
 							    "file_id": file_id
+							});
+							send_websocket_event({
+							    "event": "file_unlocked",
+							    "file_id": file_id
 							})
+			    		new_file_dictionary[file_id]['download'] = baseAPI + '/download_a_file?file_id='+file_id;
 			    		new_file_dictionary[file_id]['file_id'] = file_id;
 			    		return res.send({result: true, file: new_file_dictionary[file_id]});
 			    	})
@@ -181,7 +235,7 @@ module.exports = (wss) =>{
 
 	function send_websocket_event(data){
 		wss.clients.forEach(function(client) {
-      client.send(JSON.stringify(data));
+      client.send(JSON.stringify(data, null, 4));
     });
 	}
 
