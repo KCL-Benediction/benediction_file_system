@@ -64,6 +64,18 @@ button {
   border-bottom: 3px solid #2980b9;
 }
 
+.backBTN {
+  width: 18%;
+  left: 10px;
+  float: left;
+  margin-left: -25px;
+  margin-top: 5px;
+}
+.fas {
+  color: #ecf0f1;
+  font-size: 15px;
+}
+
 button:focus {
   outline: none;
 }

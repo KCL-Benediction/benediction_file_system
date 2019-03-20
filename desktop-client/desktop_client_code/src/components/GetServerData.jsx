@@ -2,6 +2,8 @@ import React from "react";
 import "../css/main.css";
 import ClickableFileElement from "./ClickableFileElement";
 import axios from "axios";
+import AuthService from "./AuthService";
+const Auth = new AuthService("http://52.151.113.157");
 
 class GetServerData extends React.Component {
   constructor(props) {
@@ -15,8 +17,10 @@ class GetServerData extends React.Component {
   componentDidMount() {
     fetch("http://52.151.113.157/get_all_file_details", {
       method: "GET",
+      mode: "cors",
       headers: {
-        Accept: "application/json"
+        Accept: "application/json",
+        Authorization: "Bearer " + Auth.getToken()
       }
     }).then(response => {
       response.json().then(
@@ -24,6 +28,7 @@ class GetServerData extends React.Component {
           this.setState({
             files: [json.files]
           });
+          console.log(this.state.files);
         },
         () => {
           console.log("json rejected");
@@ -62,6 +67,10 @@ class GetServerData extends React.Component {
     axios({
       url: fileID,
       method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + Auth.getToken()
+      },
       responseType: "blob" // important
     }).then(response => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
