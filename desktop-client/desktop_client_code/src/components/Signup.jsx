@@ -1,13 +1,16 @@
 import React from "react";
 import "../css/Login.css";
+import "../css/main.css";
+import AuthService from "./AuthService";
 
 class Signup extends React.Component {
-  state = {
-    email: "",
-    password: "",
-    firstName: "",
-    lastName: ""
-  };
+  constructor(props) {
+    super(props);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.Auth = new AuthService();
+  }
+
   handleChange = e => {
     this.setState({
       [e.target.id]: e.target.value
@@ -15,13 +18,33 @@ class Signup extends React.Component {
   };
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state);
+
+    this.Auth.signup(
+      this.state.username,
+      this.state.password,
+      this.state.firstname,
+      this.state.lastname
+    )
+      .then(res => {
+        this.props.history.replace("/login");
+      })
+      .catch(err => {
+        alert(err);
+      });
+  };
+
+  handleBackClick = e => {
+    e.preventDefault();
+    this.props.history.replace("/login");
   };
 
   render() {
     return (
       <div className="LoginContainer">
         <form onSubmit={this.handleSubmit} className="form">
+          <button className="backBTN" onClick={this.handleBackClick}>
+            <i className="fas fa-long-arrow-alt-left" />
+          </button>
           <span>
             <img
               src={require("../images/logo.png")}
@@ -31,10 +54,10 @@ class Signup extends React.Component {
           </span>
           <div className="inputField">
             <input
-              type="email"
-              id="email"
+              type="username"
+              id="username"
               onChange={this.handleChange}
-              placeholder="Email"
+              placeholder="Username"
             />
           </div>
           <div className="inputField">
