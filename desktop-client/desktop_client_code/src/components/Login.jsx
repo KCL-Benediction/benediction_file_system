@@ -1,14 +1,14 @@
 import React from "react";
 import "../css/Login.css";
+import AuthService from "./AuthService";
 
 class Login extends React.Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      username: "",
-      password: ""
-    };
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.validateForm = this.validateForm.bind(this);
+    this.Auth = new AuthService();
   }
 
   handleChange = e => {
@@ -16,12 +16,23 @@ class Login extends React.Component {
       [e.target.id]: e.target.value
     });
   };
+
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state);
+
+    this.Auth.login(this.state.username, this.state.password)
+      .then(res => {
+        this.props.history.replace("/");
+      })
+      .catch(err => {
+        alert(err);
+      });
   };
+
   validateForm() {
-    return this.username > 0 && this.password > 0;
+    if (this.Auth === null) {
+      alert("Pleasr");
+    }
   }
 
   render() {
@@ -52,7 +63,9 @@ class Login extends React.Component {
             />
           </div>
           <div className="inputField">
-            <button className="LoginButton">Login</button>
+            <button className="LoginButton" onClick={this.validateForm}>
+              Login
+            </button>
           </div>
           <h2>
             <a href="./Signup">Create an Account</a>
