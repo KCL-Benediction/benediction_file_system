@@ -317,6 +317,11 @@ fileMonitor.on("fileChanged", function (fileDetail, changes) {
               console.log('statusCode:', response && response.statusCode);
               console.log('body:', body);
               console.log('File changes to: ', fileDetail.fileName, ' has been synced with server');
+              if(error){
+                warn('The file is locked and being used by another user, \nplease wait to download the latest version before uploading your changes!',
+                'Benediction Sync-Lock Error');
+                //alert('The file is locked and being used by another user, \nplease wait to download the latest version before uploading your changes!');
+              }
             });
         }
       }
