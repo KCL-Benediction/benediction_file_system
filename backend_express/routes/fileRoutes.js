@@ -67,7 +67,7 @@ module.exports = (wss) =>{
 			var file_new_name = req.body.file_new_name;
 			var file_name_conflict = false;
 			for (file_id in file_dictionary) {
-				if(file_dictionary[file_id]['file_name'] == file_name){
+				if(file_dictionary[file_id]['file_name'] == file_new_name){
 					file_name_conflict = true;
 					break
 				}
