@@ -2,84 +2,67 @@
 
 import UIKit
 
-class HomeTableViewController: UITableViewController {
+//MARK :- Setting struct to store data from server
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        NotificationCenter.default.addObserver(self, selector: #selector(showprofile), name: NSNotification.Name("showprofile"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(showupload), name: NSNotification.Name("showupload"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(showdownload), name: NSNotification.Name("showdownload"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(showtrash), name: NSNotification.Name("showtrash"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(showsettings), name: NSNotification.Name("showsettings"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(showlogout), name: NSNotification.Name("showlogout"), object: nil)
-    }
-    
-    /*start from this part for page seque to connected each page naturally and each arrow have a name then we linked to find the next page or back.*/
-    @objc func showprofile ()
-    {
-        performSegue(withIdentifier: "showprofile", sender: nil)
-    }
-    
-    @objc func showupload ()
-    {
-        performSegue(withIdentifier: "showupload", sender: nil)
-    }
-    
-    @objc func showdownload ()
-    {
-        performSegue(withIdentifier: "showdownload", sender: nil)
-    }
-    
-    @objc func showtrash ()
-    {
-        performSegue(withIdentifier: "showtrash", sender: nil)
-    }
-    
-    @objc func showsettings ()
-    {
-        performSegue(withIdentifier: "showsettings", sender: nil)
-    }
-    
-    @objc func showlogout()
-    {
-        performSegue(withIdentifier: "showlogout", sender: nil)
-    }
-    
-        
-    }
-
-    // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
-    }
-}
-
-extension HomeViewController: UIViewControllerTransitioningDelegate
+public struct Country : Codable
 {
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        transition.presents = true
-        return transition
-    }
+    var result: Bool
+    var files: [filedetails]
     
-    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        transition.presents = false
-        return transition
+}
+
+extension Country
+{
+    init()
+    {
+        self.result = false
+        self.files = [filedetails.init()]
     }
 }
 
+public struct filedetails: Codable
+{
+    var file_name: String
+    var version: Int
+    var locked: Bool
+    var file_id: String
+    var url: URL
+    //  let url: Foundation.URL = URL()
+}
+extension filedetails
+{
+    init()
+    {
+        self.file_name = ""
+        self.version = 0
+        self.locked = false
+        self.file_id = ""
+        let temp = "https://www.apple.com"
+        self.url = URL(string: temp)!
+    }
+}
+public var user=Country.init()
+
+public class HomeTableViewController: UITableViewController {
+
+    // for UIVIEW
+    @IBOutlet weak var homeTablecontainer: UIView!
     
+    @IBOutlet weak var FileTable: UITableView!
+    
+    @IBAction func unwindToMain(_ segue: UIStoryboardSegue) {
+        
+    }
+
+    //MARK :- Table Showing in the Main page
+    var snap:MainTableViewController?
+    
+    //Mark : - Calling Data for Table Showing in the Main page
+    override public func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if (segue.identifier == "segueView")
+        { snap = (segue.destination as! MainTableViewController) }
+    }
 
 
+
+}
