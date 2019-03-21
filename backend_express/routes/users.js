@@ -48,7 +48,7 @@ router.post('/login', upload.array(), function(req, res, next) {
 				id: user._id, 
 				username: user.username 
 			}, authSecret, {
-				expiresIn: 129600 
+				expiresIn: 129600000000
 			});
 			var responseUser = filterByKey(user,['username', 'firstname', 'lastname']);
 			console.log(responseUser);
