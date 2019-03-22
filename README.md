@@ -23,7 +23,3 @@ npm start
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
-
-## Mongo DB access:
-
-mongodb://benediction:benediction2019gogo@ds159185.mlab.com:59185/benediction
