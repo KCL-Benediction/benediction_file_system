@@ -40,7 +40,6 @@ class GetServerData extends React.Component {
   handleDoubleClickItem(clickedFileId) {
     // alert("I got double-clicked!");
     let findFile = this.state.files[0];
-
     // console.log(inty);
 
     let fileIdx = findFile.reduce(
@@ -63,23 +62,51 @@ class GetServerData extends React.Component {
     let temp = this.state.files[0][fileIdx.foundAt];
     let fileID = temp.url;
     let fileName = temp.file_name;
+    let fileInfo = this.state.files[0][fileIdx.foundAt];
 
-    axios({
-      url: fileID,
-      method: "GET",
-      headers: {
+    const http = window.require('http');
+    const fs = window.require('fs');
+    const file = fs.createWriteStream("./downloadedFiles/" + fileName);
+    const request = http.get(fileID,{
+      headers:{
         Accept: "application/json",
         Authorization: "Bearer " + Auth.getToken()
       },
       responseType: "blob" // important
-    }).then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
+    } , function(response) {
+      response.on('end', () => {
+        alert("Download Finish");
+        fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
+          var obj = JSON.parse(content);
+          obj[fileInfo.file_id] = fileInfo
+          fs.writeFile("./public/files.json",JSON.stringify(obj),(error, somthing)=>{
+
+          })
+        })
+      });
+      response.on('data', (chunck) => {
+        console.log("chunck: ",chunck)
+      });
+      response.pipe(file);
     });
+
+
+    // axios({
+    //   url: fileID,
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     Authorization: "Bearer " + Auth.getToken()
+    //   },
+    //   responseType: "blob" // important
+    // }).then(response => {
+    //   const url = window.URL.createObjectURL(new Blob([response.data]));
+    //   const link = document.createElement("a");
+    //   link.href = url;
+    //   link.setAttribute("download", fileName);
+    //   document.body.appendChild(link);
+    //   link.click();
+    // });
   }
 
   render() {

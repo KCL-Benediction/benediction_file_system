@@ -66,8 +66,8 @@ module.exports = (wss) =>{
 			var file_id = req.body.file_id;
 			var file_new_name = req.body.file_new_name;
 			var file_name_conflict = false;
-			for (file_id in file_dictionary) {
-				if(file_dictionary[file_id]['file_name'] == file_name){
+			for (fid in file_dictionary) {
+				if(file_dictionary[fid]['file_name'] == file_new_name){
 					file_name_conflict = true;
 					break
 				}
@@ -83,6 +83,7 @@ module.exports = (wss) =>{
 				    	return res.send({result: false, reason: "error on changing the name on server"});
 				    }else{
 				    	file_dictionary[file_id]['file_name'] = file_new_name;
+					console.log(file_dictionary[file_id],file_new_name);
 				    	fs.writeFile("./files/files.json", JSON.stringify(file_dictionary, null, 4),()=>{
 								send_websocket_event({
 								    "event": "file_name_changed",
