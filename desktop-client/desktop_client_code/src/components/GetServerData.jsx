@@ -40,7 +40,6 @@ class GetServerData extends React.Component {
   handleDoubleClickItem(clickedFileId) {
     // alert("I got double-clicked!");
     let findFile = this.state.files[0];
-
     // console.log(inty);
 
     let fileIdx = findFile.reduce(
@@ -63,7 +62,7 @@ class GetServerData extends React.Component {
     let temp = this.state.files[0][fileIdx.foundAt];
     let fileID = temp.url;
     let fileName = temp.file_name;
-
+    let fileInfo = this.state.files[0][fileIdx.foundAt];
 
     const http = window.require('http');
     const fs = window.require('fs');
@@ -76,13 +75,21 @@ class GetServerData extends React.Component {
       responseType: "blob" // important
     } , function(response) {
       response.on('end', () => {
-        alert("Download Finish")
+        alert("Download Finish");
+        fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
+          var obj = JSON.parse(content);
+          obj[fileInfo.file_id] = fileInfo
+          fs.writeFile("./public/files.json",JSON.stringify(obj),(error, somthing)=>{
+
+          })
+        })
       });
       response.on('data', (chunck) => {
         console.log("chunck: ",chunck)
       });
       response.pipe(file);
     });
+
 
     // axios({
     //   url: fileID,
