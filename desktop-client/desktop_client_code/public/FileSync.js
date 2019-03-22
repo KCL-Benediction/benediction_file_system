@@ -284,19 +284,32 @@ fileMonitor.start(500);
 // sync local newly added file with server folder.
 fileMonitor.on("fileAdded", function (fileDetail) {
   console.log("File: ", fileDetail.fileName, " has been Added.");
+  
+  ;
+  fs.readFile("./public/codeFile.txt", 'utf-8', (error, content)=>{
+    var code = 'Bearer '+content;
+
   //upload new file to server folder 
   fileAgent.post('http://52.151.113.157/upload_a_file')
-    .field('type', 'new')
+  .set({ 'Authorization': code, Accept: 'application/json' }) 
+  .field('type', 'new')
     .field('file_name', fileDetail.fileName)
     .attach('file', fileDetail.fullPath)
     .then(function (error, response, body) {
+      fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
+        var obj = JSON.parse(content);
+        obj[response.body.file.file_id] = response.body.file
+        fs.writeFile("./public/files.json",JSON.stringify(obj),(error, dataWritten)=>{
+            console.log(dataWritten)
+        })
+      });
       console.log('Error :', error);
       console.log('statusCode:', response && response.statusCode);
       console.log('body:', body);
       console.log('Addition of new file: ', fileDetail.fileName, ' has been synced with server');
     });
 });
-
+});
 // sync with server if file has been changed.
 fileMonitor.on("fileChanged", function (fileDetail, changes) {
   console.log("File: ", fileDetail.fileName, " has been changed.");
