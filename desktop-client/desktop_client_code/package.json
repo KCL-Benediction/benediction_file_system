@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "axios": "^0.18.0",
     "braces": "^2.3.2",
-    "electron": "^4.1.0",
+    "electron": "^4.1.1",
     "font-awesome": "^4.7.0",
     "form-data": "^2.3.3",
+    "jwt-decode": "^2.2.0",
     "node-fetch": "^2.3.0",
     "prop-types-extra": "^1.1.0",
     "react": "^16.8.3",
