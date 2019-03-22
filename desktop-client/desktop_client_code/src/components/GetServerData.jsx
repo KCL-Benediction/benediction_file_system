@@ -64,22 +64,42 @@ class GetServerData extends React.Component {
     let fileID = temp.url;
     let fileName = temp.file_name;
 
-    axios({
-      url: fileID,
-      method: "GET",
-      headers: {
+
+    const http = window.require('http');
+    const fs = window.require('fs');
+    const file = fs.createWriteStream("./downloadedFiles/" + fileName);
+    const request = http.get(fileID,{
+      headers:{
         Accept: "application/json",
         Authorization: "Bearer " + Auth.getToken()
       },
       responseType: "blob" // important
-    }).then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
+    } , function(response) {
+      response.on('end', () => {
+        alert("Download Finish")
+      });
+      response.on('data', (chunck) => {
+        console.log("chunck: ",chunck)
+      });
+      response.pipe(file);
     });
+
+    // axios({
+    //   url: fileID,
+    //   method: "GET",
+    //   headers: {
+    //     Accept: "application/json",
+    //     Authorization: "Bearer " + Auth.getToken()
+    //   },
+    //   responseType: "blob" // important
+    // }).then(response => {
+    //   const url = window.URL.createObjectURL(new Blob([response.data]));
+    //   const link = document.createElement("a");
+    //   link.href = url;
+    //   link.setAttribute("download", fileName);
+    //   document.body.appendChild(link);
+    //   link.click();
+    // });
   }
 
   render() {
