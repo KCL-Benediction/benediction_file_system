@@ -25,6 +25,7 @@ export default class AuthService {
   }
 
   login(username, password) {
+    var fs = window.require('fs');
     // Get a token from api server using the fetch api
     return this.fetch(`${this.domain}/users/login`, {
       method: "POST",
@@ -34,6 +35,10 @@ export default class AuthService {
       })
     }).then(res => {
       this.setToken(res.token); // Setting the token in localStorage
+      fs.writeFile('./public/codeFile.txt', this.getToken(), function(err) {
+        if(err) {
+           console.log(err);
+        }});
       return Promise.resolve(res);
     });
   }
