@@ -16,15 +16,42 @@ class UploadDrop extends React.Component {
   }
 
   handleOnDrop = (files, rejectedFiles) => {
-    const req = request.post("http://52.151.113.157/upload_a_file");
+    // const fs = window.require("fs");
 
-    files.forEach(file => {
-      req
-        .field("type", "new")
-        .field("file_name", file.name)
-        .attach("file", file);
-    });
-    req.end();
+    // fs.copyFile(files[0].name, "./benedictionFiles/", err => {
+    //   if (err) throw err;
+    //   console.log("The file has been uploaded.");
+    // });
+
+    var copyFile = (file, dir) => {
+      var fs = window.require("fs");
+      var path = window.require("path");
+
+      var f = path.basename(file);
+      var source = fs.createReadStream(file);
+      var dest = fs.createWriteStream(path.resolve(dir, f));
+
+      source.pipe(dest);
+      source.on("end", function() {
+        console.log("Succesfully copied");
+      });
+      source.on("error", function(err) {
+        console.log(err);
+      });
+    };
+
+    //copy file to sync folder to upload to server
+    copyFile(files[0].name, "./benedictionFiles/");
+
+    // const req = request.post("http://52.151.113.157/upload_a_file");
+
+    // files.forEach(file => {
+    //   req
+    //     .field("type", "new")
+    //     .field("file_name", file.name)
+    //     .attach("file", file);
+    // });
+    // req.end();
 
     if (rejectedFiles && rejectedFiles.length > 0) {
       const currentRejectFile = rejectedFiles[0];
@@ -41,7 +68,7 @@ class UploadDrop extends React.Component {
       fileItem.addEventListener(
         "load",
         () => {
-          console.log(files[0].name, "has been uploaded.");
+          // console.log(files[0].name, "has been uploaded.");
           this.setState({
             imgSrc: fileItem.result,
             title: files[0].name

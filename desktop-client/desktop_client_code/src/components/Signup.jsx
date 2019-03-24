@@ -17,20 +17,28 @@ class Signup extends React.Component {
     });
   };
   handleSubmit = e => {
-    e.preventDefault();
+    //e.preventDefault();
 
-    this.Auth.signup(
-      this.state.username,
-      this.state.password,
-      this.state.firstname,
-      this.state.lastname
-    )
-      .then(res => {
+    if (
+      !!this.state &&
+      !!(
+        this.state.username &&
+        this.state.password &&
+        this.state.firstname &&
+        this.state.lastname
+      )
+    ) {
+      this.Auth.signup(
+        this.state.username,
+        this.state.password,
+        this.state.firstname,
+        this.state.lastname
+      ).then(res => {
         this.props.history.replace("/login");
-      })
-      .catch(err => {
-        alert(err);
       });
+    } else {
+      e.preventDefault(alert("Please enter all details."));
+    }
   };
 
   handleBackClick = e => {
