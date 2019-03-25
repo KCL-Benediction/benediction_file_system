@@ -74,18 +74,25 @@ class GetServerData extends React.Component {
           Accept: "application/json",
           Authorization: "Bearer " + Auth.getToken()
         },
-        responseType: "blob" // important
-      },
-      function(response) {
-        response.on("end", () => {
-          alert("Download Finish");
-        });
-        response.on("data", chunck => {
-          // console.log("chunck: ", chunck);
-        });
-        response.pipe(file);
-      }
-    );
+      responseType: "blob" // important
+    }, function(response) {
+      response.on('end', () => {
+        alert("Download Finish");
+        //write file details to json file to support locking
+        fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
+          var obj = JSON.parse(content);
+          obj[fileInfo.file_id] = fileInfo
+          fs.writeFile("./public/files.json",JSON.stringify(obj),(error, somthing)=>{
+
+          })
+        })
+      });
+      response.on('data', (chunck) => {
+        console.log("chunck: ",chunck)
+      });
+      response.pipe(file);
+    });
+
 
     // axios({
     //   url: fileID,
