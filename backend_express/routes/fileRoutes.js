@@ -201,12 +201,15 @@ module.exports = (wss) =>{
 					}			
 					if(!file_dictionary[file_id]){
 						remove_file(uploadedFile)
+						console.log("123")
 						return res.send({result: false, reason: "no such a file"})
 					}else if (file_dictionary[file_id]['locked'] && !req.lockedByMe) {
-						remove_file(uploadedFile)
+						remove_file(uploadedFile);
+						console.log("123")
 						return res.send({result: false, reason: "file locked"})
-					}else if(file_dictionary['version'] != last_version){
-						remove_file(uploadedFile)
+					}else if(file_dictionary[file_id]['version'] != last_version){
+						remove_file(uploadedFile);
+						console.log("123")
 						return res.send({result: false, reason: "needs to download the newest version first"})
 					}else{
 						var new_file_dictionary = file_dictionary;
