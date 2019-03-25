@@ -21,7 +21,8 @@ var fs = require("fs"),
   fetch = require('node-fetch'),
   util = require("util"),
   events = require("events");
-
+  var code = '';
+  var baseAPI = 'http://34.73.231.127';
 /*
   A FileDetail Object stores the following details about a file
   - directory, fullPath, fileName, size, extension, 
@@ -280,66 +281,71 @@ util.inherits(DirectoryWatcher, events.EventEmitter);
  */
 var fileMonitor = new DirectoryWatcher("./benedictionFiles", true);
 fileMonitor.start(500);
-
+fs.readFile("./public/codeFile.txt", 'utf-8', (error, content)=>{
+  code = 'Bearer '+content;
+});
 // sync local newly added file with server folder.
 fileMonitor.on("fileAdded", function (fileDetail) {
   console.log("File: ", fileDetail.fileName, " has been Added.");
-  
-  ;
-  fs.readFile("./public/codeFile.txt", 'utf-8', (error, content)=>{
-    var code = 'Bearer '+content;
 
   //upload new file to server folder 
-  fileAgent.post('http://52.151.113.157/upload_a_file')
+  //and writes file details in local json to support versioning
+  fileAgent.post(baseAPI+'/upload_a_file')
   .set({ 'Authorization': code, Accept: 'application/json' }) 
   .field('type', 'new')
     .field('file_name', fileDetail.fileName)
     .attach('file', fileDetail.fullPath)
-    .then(function (error, response, body) {
+    .then(function (response) {
+      var obj = {};
       fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
-        var obj = JSON.parse(content);
+        if(!error){
+          obj = JSON.parse(content);
+        } 
         obj[response.body.file.file_id] = response.body.file
         fs.writeFile("./public/files.json",JSON.stringify(obj),(error, dataWritten)=>{
             console.log(dataWritten)
         })
       });
-      console.log('Error :', error);
-      console.log('statusCode:', response && response.statusCode);
-      console.log('body:', body);
+      console.log('body:', response.file);
       console.log('Addition of new file: ', fileDetail.fileName, ' has been synced with server');
     });
-});
+
 });
 // sync with server if file has been changed.
+//sends the version of the local file to server 
+//server will accept changes from current versions
 fileMonitor.on("fileChanged", function (fileDetail, changes) {
-  console.log("File: ", fileDetail.fileName, " has been changed.");
-
-  fetch('http://52.151.113.157/get_all_file_details')
-    .then(res => res.json())
-    .then(json => {
-      var data = json.files;
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].file_name === fileDetail.fileName) {
-          var fileId = data[i].file_id;
-          fileAgent.post('http://52.151.113.157/upload_a_file')
-            .field('file_id', fileId)
+  console.log("File: ", fileDetail.fileName, " has been changed."); 
+    fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
+      var obj = JSON.parse(content);
+      for(key in obj){
+        if(obj[key].file_name === fileDetail.fileName){
+          //console.log('FIle: '+ fileDetail.fileName+ ' '+obj[key].file_name );
+          var file_id = obj[key].file_id;
+          var version = obj[key].version;
+          fileAgent.post(baseAPI+'/upload_a_file')
+          .set({ 'Authorization': code, Accept: 'application/json' }) 
+            .field('file_id', file_id)
             .field('type', 'update')
+            .field('last_version', version)
             .attach('file', fileDetail.fullPath)
-            .then(function (error, response, body) {
+            .then(function (response, error) {
+              fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
+                obj[key].version = response.body.file.version
+                fs.writeFile("./public/files.json",JSON.stringify(obj),(error, dataWritten)=>{
+                    //console.log(dataWritten)
+                })
+              });
               console.log('Error :', error);
-              console.log('statusCode:', response && response.statusCode);
-              console.log('body:', body);
+              console.log('Body:', response);
               console.log('File changes to: ', fileDetail.fileName, ' has been synced with server');
               if(error){
-                warn('The file is locked and being used by another user, \nplease wait to download the latest version before uploading your changes!',
-                'Benediction Sync-Lock Error');
-                //alert('The file is locked and being used by another user, \nplease wait to download the latest version before uploading your changes!');
+                alert('The file is locked and being used by another user, \nplease wait to download the latest version before uploading your changes!');
               }
             });
         }
       }
     });
-
 });
 
 // sync with server when file is removed from local folder
@@ -347,26 +353,31 @@ fileMonitor.on("fileRemoved", function (filePath) {
   console.log("File: ", filePath, " has been Deleted.");
   var fileDeleted = path.basename(filePath);
   //delete file from server if deleted from local monitored directory
-  //checks whether the file exists on the server first before 
+  //checks whether the file exists in the local directory json file 
   //before calling the delete API end-point
-  fetch('http://52.151.113.157/get_all_file_details')
-    .then(res => res.json())
-    .then(json => {
-      var data = json.files;
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].file_name === fileDeleted) {
-          var fileId = data[i].file_id;
-          fileAgent.post('http://52.151.113.157/delete_a_file')
-            .field('file_id', fileId)
-            .then(function (error, response, body) {
+  fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
+    var obj = JSON.parse(content);
+    //console.log('First Object: '+JSON.stringify(obj));
+    for(key in obj){
+      if(obj[key].file_name === fileDeleted){
+        var file_id = obj[key].file_id; 
+        //delete the key and its contents
+        delete obj[key];
+         fileAgent.post(baseAPI+'/delete_a_file')
+          .set({ 'Authorization': code, Accept: 'application/json'})
+            .field('file_id', file_id)
+            .then(function (response, error) { 
+               //re-write the file without the above
+               fs.writeFile("./public/files.json",JSON.stringify(obj),(error, dataWritten)=>{
+                //console.log(dataWritten);
+            });
               console.log('Error :', error);
-              console.log('statusCode:', response && response.statusCode);
-              console.log('body:', body);
+              console.log('BODY:', response);
               console.log('Deletion of file: ', fileDeleted, ' has been synced with server');
             });
         }
       }
-    });
+    }); 
 });
 
 // Local root directory monitoring and synchronising with server.
