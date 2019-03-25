@@ -67,7 +67,7 @@ class GetServerData extends React.Component {
 
     const http = window.require("http");
     const fs = window.require("fs");
-    const file = fs.createWriteStream("./benedictionFiles/" + fileName);
+    const file = fs.createWriteStream("./benedictionFiles/newfile_" + fileName);
     const request = http.get(
       fileID,
       {
