@@ -22,6 +22,7 @@ var fs = require("fs"),
   util = require("util"),
   events = require("events");
   var code = '';
+  var baseAPI = 'http://34.73.231.127';
 /*
   A FileDetail Object stores the following details about a file
   - directory, fullPath, fileName, size, extension, 
@@ -289,14 +290,17 @@ fileMonitor.on("fileAdded", function (fileDetail) {
 
   //upload new file to server folder 
   //and writes file details in local json to support versioning
-  fileAgent.post('http://52.151.113.157/upload_a_file')
+  fileAgent.post(baseAPI+'/upload_a_file')
   .set({ 'Authorization': code, Accept: 'application/json' }) 
   .field('type', 'new')
     .field('file_name', fileDetail.fileName)
     .attach('file', fileDetail.fullPath)
     .then(function (response) {
+      var obj = {};
       fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
-          var obj = JSON.parse(content);
+        if(!error){
+          obj = JSON.parse(content);
+        } 
         obj[response.body.file.file_id] = response.body.file
         fs.writeFile("./public/files.json",JSON.stringify(obj),(error, dataWritten)=>{
             console.log(dataWritten)
@@ -319,7 +323,7 @@ fileMonitor.on("fileChanged", function (fileDetail, changes) {
           //console.log('FIle: '+ fileDetail.fileName+ ' '+obj[key].file_name );
           var file_id = obj[key].file_id;
           var version = obj[key].version;
-          fileAgent.post('http://52.151.113.157/upload_a_file')
+          fileAgent.post(baseAPI+'/upload_a_file')
           .set({ 'Authorization': code, Accept: 'application/json' }) 
             .field('file_id', file_id)
             .field('type', 'update')
@@ -359,8 +363,8 @@ fileMonitor.on("fileRemoved", function (filePath) {
         var file_id = obj[key].file_id; 
         //delete the key and its contents
         delete obj[key];
-         fileAgent.post('http://52.151.113.157/delete_a_file')
-          .set({ 'Authorization': code, Accept: 'application/json' })
+         fileAgent.post(baseAPI+'/delete_a_file')
+          .set({ 'Authorization': code, Accept: 'application/json'})
             .field('file_id', file_id)
             .then(function (response, error) { 
                //re-write the file without the above
