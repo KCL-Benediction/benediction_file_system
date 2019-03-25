@@ -2,7 +2,7 @@ import decode from "jwt-decode";
 
 export default class AuthService {
   constructor(domain) {
-    this.domain = domain || "http://52.151.113.157";
+    this.domain = domain || "http://34.73.231.127";
     this.fetch = this.fetch.bind(this);
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
