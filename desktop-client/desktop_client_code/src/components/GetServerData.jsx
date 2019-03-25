@@ -5,6 +5,8 @@ import ClickableFileElement from "./ClickableFileElement";
 import AuthService from "./AuthService";
 const Auth = new AuthService("http://34.73.231.127");
 
+var connection = new WebSocket("ws://34.73.231.127");
+
 class GetServerData extends React.Component {
   constructor(props) {
     super(props);
@@ -14,7 +16,7 @@ class GetServerData extends React.Component {
     };
   }
 
-  componentDidMount() {
+  fetchFileDetails = () => {
     fetch("http://34.73.231.127/get_all_file_details", {
       method: "GET",
       mode: "cors",
@@ -35,13 +37,23 @@ class GetServerData extends React.Component {
         }
       );
     });
+  };
+
+  componentDidMount() {
+    this.fetchFileDetails();
+    this.fileUpdate();
   }
+
+  fileUpdate = () => {
+    // console.log("fff");
+    connection.onmessage = event => {
+      this.fetchFileDetails();
+    };
+  };
 
   handleDoubleClickItem(clickedFileId) {
     // alert("I got double-clicked!");
     let findFile = this.state.files[0];
-
-    // console.log(inty);
 
     let fileIdx = findFile.reduce(
       (acc, file) => {
@@ -100,23 +112,6 @@ class GetServerData extends React.Component {
         response.pipe(file);
       }
     );
-
-    // axios({
-    //   url: fileID,
-    //   method: "GET",
-    //   headers: {
-    //     Accept: "application/json",
-    //     Authorization: "Bearer " + Auth.getToken()
-    //   },
-    //   responseType: "blob" // important
-    // }).then(response => {
-    //   const url = window.URL.createObjectURL(new Blob([response.data]));
-    //   const link = document.createElement("a");
-    //   link.href = url;
-    //   link.setAttribute("download", fileName);
-    //   document.body.appendChild(link);
-    //   link.click();
-    // });
   }
 
   render() {
