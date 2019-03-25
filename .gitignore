@@ -83,3 +83,7 @@ typings/
 # File Folder
 backend_express/files/
 backend_express/files/files.json
+
+#File
+desktop-client/desktop_client_code/public/codeFile.txt
+desktop-client/desktop_client_code/public/files.json

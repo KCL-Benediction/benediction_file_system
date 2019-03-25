@@ -7,7 +7,6 @@ class Login extends React.Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.validateForm = this.validateForm.bind(this);
     this.Auth = new AuthService();
   }
 
@@ -18,22 +17,16 @@ class Login extends React.Component {
   };
 
   handleSubmit = e => {
-    e.preventDefault();
+    // e.preventDefault();
 
-    this.Auth.login(this.state.username, this.state.password)
-      .then(res => {
+    if (!!this.state && !!(this.state.username && this.state.password)) {
+      this.Auth.login(this.state.username, this.state.password).then(res => {
         this.props.history.replace("/");
-      })
-      .catch(err => {
-        alert(err);
       });
-  };
-
-  validateForm() {
-    if (this.Auth === null) {
-      alert("Pleasr");
+    } else {
+      e.preventDefault(alert("Please enter your username and password."));
     }
-  }
+  };
 
   render() {
     return (
@@ -63,9 +56,7 @@ class Login extends React.Component {
             />
           </div>
           <div className="inputField">
-            <button className="LoginButton" onClick={this.validateForm}>
-              Login
-            </button>
+            <button className="LoginButton">Login</button>
           </div>
           <h2>
             <a href="./Signup">Create an Account</a>

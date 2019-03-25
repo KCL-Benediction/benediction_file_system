@@ -1,9 +1,8 @@
 import decode from "jwt-decode";
 
 export default class AuthService {
-  // Initializing important variables
   constructor(domain) {
-    this.domain = domain || "http://52.151.113.157"; // API server domain
+    this.domain = domain || "http://52.151.113.157";
     this.fetch = this.fetch.bind(this);
     this.signup = this.signup.bind(this);
     this.login = this.login.bind(this);
@@ -19,13 +18,17 @@ export default class AuthService {
         firstname,
         lastname
       })
-    }).then(res => {
-      alert("You have successfully registered.");
-    });
+    })
+      .then(res => {
+        alert("You have successfully registered.");
+      })
+      .catch(err => {
+        alert("Please input all details.");
+      });
   }
 
   login(username, password) {
-    var fs = window.require('fs');
+    var fs = window.require("fs");
     // Get a token from api server using the fetch api
     return this.fetch(`${this.domain}/users/login`, {
       method: "POST",
@@ -34,26 +37,25 @@ export default class AuthService {
         password
       })
     }).then(res => {
-      this.setToken(res.token); // Setting the token in localStorage
-      fs.writeFile('./public/codeFile.txt', this.getToken(), function(err) {
-        if(err) {
-           console.log(err);
-        }});
+      this.setToken(res.token);
+      fs.writeFile("./public/codeFile.txt", this.getToken(), function(err) {
+        if (err) {
+          console.log(err);
+        }
+      });
       return Promise.resolve(res);
     });
   }
 
   loggedIn() {
-    // Checks if there is a saved token and it's still valid
-    const token = this.getToken(); // GEtting token from localstorage
-    return !!token && !this.isTokenExpired(token); // handwaiving here
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired(token);
   }
 
   isTokenExpired(token) {
     try {
       const decoded = decode(token);
       if (decoded.exp < Date.now() / 1000) {
-        // Checking if token is expired.
         return true;
       } else return false;
     } catch (err) {
@@ -62,17 +64,14 @@ export default class AuthService {
   }
 
   setToken(idToken) {
-    // Saves user token to localStorage
     localStorage.setItem("id_token", idToken);
   }
 
   getToken() {
-    // Retrieves the user token from localStorage
     return localStorage.getItem("id_token");
   }
 
   logout() {
-    // Clear user token and profile data from localStorage
     localStorage.removeItem("id_token");
   }
 
@@ -82,13 +81,11 @@ export default class AuthService {
   }
 
   fetch(url, options) {
-    // performs api calls sending the required authentication headers
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json"
     };
 
-    // Setting Authorization header
     // Authorization: Bearer xxxxxxx.xxxxxxxx.xxxxxx
     if (this.loggedIn()) {
       headers["Authorization"] = "Bearer " + this.getToken();
@@ -103,9 +100,7 @@ export default class AuthService {
   }
 
   checkStatus(response) {
-    // raises an error in case response status is not a success
     if (response.status >= 200 && response.status < 300) {
-      // Success status lies between 200 to 300
       return response;
     } else {
       var error = new Error(response.statusText);

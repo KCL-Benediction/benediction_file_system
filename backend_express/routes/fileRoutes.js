@@ -4,10 +4,11 @@ var fs = require("fs");
 var randomstring = require("randomstring");
 var multer = require('multer');
 var app = require('./../app');
-const baseAPI = 'http://52.151.113.157';
+const baseAPI = "http://34.73.231.127";
 var jwt = require('jsonwebtoken');
 var exjwt = require('express-jwt');
 const authSecret = 'benediction-backend-auth-key';
+const util = require('util');
 const jwtMW = exjwt({
     secret: authSecret
 });
@@ -53,6 +54,9 @@ module.exports = (wss) =>{
 				var file = file_dictionary[file_id];
 				file['file_id'] = file_id;
 				file['url'] = baseAPI + '/download_a_file?file_id='+file_id;
+				if (file['version']>1) {
+					file['url_last_version'] = baseAPI + '/download_a_file?last_version=true&file_id='+file_id;
+				}
 				files.push(file)
 			}
 			return res.send({result: true, files: files})
@@ -134,12 +138,19 @@ module.exports = (wss) =>{
 		fs.readFile("./files/files.json","utf-8",(error, content)=>{
 			var file_dictionary = JSON.parse(content);
 			var file_id = req.param('file_id');
+			var last_version = req.param('last_version');
 			if (!file_id) {
 				return res.send({result: false, reason: "the request missed some data"});
-			}else if (file_id in file_dictionary) {
+			}else if(!(file_id in file_dictionary)){
+				return res.send({result: false, reason: "no such a file"})
+			}else if (!last_version) {
 				return res.download( process.env.PWD + '/files/'+file_dictionary[file_id]['file_name'])
 			}else{
-				return res.send({result: false, reason: "no such a file"})
+				if (file_dictionary[file_id]['lastVersionLocation']) {
+					return res.download( process.env.PWD + file_dictionary[file_id]['lastVersionLocation'])
+				}else{
+					return res.send({result: false, reason: "there's no last version of this file"})
+				}
 			}
 		})
 	})
@@ -150,7 +161,7 @@ module.exports = (wss) =>{
 		upload.single('file'), 
 		jwtMW, 
 		(req, res) => {
-			fs.readFile("./files/files.json","utf-8",(error, content)=>{
+			fs.readFile("./files/files.json","utf-8", async (error, content)=>{
 				var file_dictionary = JSON.parse(content);
 				var uploadedFile = req.file;
 				var type = req.body.type;
@@ -202,7 +213,13 @@ module.exports = (wss) =>{
 						new_file_dictionary[file_id]['version'] = new_file_dictionary[file_id]['version'] + 1;
 						new_file_dictionary[file_id]['locked'] = false;
 						file_name = new_file_dictionary[file_id]['file_name'];
-						console.log("new_file_dictionary", new_file_dictionary);
+						var fsRename = util.promisify(fs.rename);
+						var changeToLastVersionFolder = 
+							await fsRename(
+								'./files/'+new_file_dictionary[file_id]['file_name'],
+								'./files/last_version/'+new_file_dictionary[file_id]['file_name']
+							);
+						new_file_dictionary[file_id]['lastVersionLocation'] = '/files/last_version/'+new_file_dictionary[file_id]['file_name']
 					}
 				}else{
 					remove_file(uploadedFile)
