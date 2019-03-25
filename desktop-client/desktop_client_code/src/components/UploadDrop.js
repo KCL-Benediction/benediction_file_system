@@ -1,7 +1,6 @@
 import React from "react";
 import Dropzone from "react-dropzone";
 import "../css/Upload.css";
-import request from "superagent";
 
 const imageMaxSize = 10000000; //bytes
 const noClick = e => e.stopPropagation();
@@ -16,13 +15,6 @@ class UploadDrop extends React.Component {
   }
 
   handleOnDrop = (files, rejectedFiles) => {
-    // const fs = window.require("fs");
-
-    // fs.copyFile(files[0].name, "./benedictionFiles/", err => {
-    //   if (err) throw err;
-    //   console.log("The file has been uploaded.");
-    // });
-
     var copyFile = (file, dir) => {
       var fs = window.require("fs");
       var path = window.require("path");
@@ -42,16 +34,6 @@ class UploadDrop extends React.Component {
 
     //copy file to sync folder to upload to server
     copyFile(files[0].name, "./benedictionFiles/");
-
-    // const req = request.post("http://52.151.113.157/upload_a_file");
-
-    // files.forEach(file => {
-    //   req
-    //     .field("type", "new")
-    //     .field("file_name", file.name)
-    //     .attach("file", file);
-    // });
-    // req.end();
 
     if (rejectedFiles && rejectedFiles.length > 0) {
       const currentRejectFile = rejectedFiles[0];
