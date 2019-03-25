@@ -287,7 +287,9 @@ fs.readFile("./public/codeFile.txt", 'utf-8', (error, content)=>{
 // sync local newly added file with server folder.
 fileMonitor.on("fileAdded", function (fileDetail) {
   console.log("File: ", fileDetail.fileName, " has been Added.");
+  var prefix = fileDetail.fileName.split('_')[0];
 
+  if(!(prefix === 'newfile')){
   //upload new file to server folder 
   //and writes file details in local json to support versioning
   fileAgent.post(baseAPI+'/upload_a_file')
@@ -309,6 +311,16 @@ fileMonitor.on("fileAdded", function (fileDetail) {
       console.log('body:', response.file);
       console.log('Addition of new file: ', fileDetail.fileName, ' has been synced with server');
     });
+  }else{
+    var file =  fileDetail.fileName.split('_');
+        file.splice(0,1);
+        var filename = file.join('_');
+        fs.rename(fileDetail.fileName, filename, function(){
+          fs.unlink(fileDetail.fileName, function(){
+            //
+          })
+        });
+  }
 
 });
 // sync with server if file has been changed.
@@ -331,6 +343,7 @@ fileMonitor.on("fileChanged", function (fileDetail, changes) {
             .attach('file', fileDetail.fullPath)
             .then(function (response, error) {
               fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
+                console.log(response);
                 obj[key].version = response.body.file.version
                 fs.writeFile("./public/files.json",JSON.stringify(obj),(error, dataWritten)=>{
                     //console.log(dataWritten)
