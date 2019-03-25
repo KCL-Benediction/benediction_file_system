@@ -3,7 +3,7 @@ import "../css/main.css";
 import ClickableFileElement from "./ClickableFileElement";
 
 import AuthService from "./AuthService";
-const Auth = new AuthService("http://52.151.113.157");
+const Auth = new AuthService("http://34.73.231.127");
 
 class GetServerData extends React.Component {
   constructor(props) {
@@ -15,7 +15,7 @@ class GetServerData extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://52.151.113.157/get_all_file_details", {
+    fetch("http://34.73.231.127/get_all_file_details", {
       method: "GET",
       mode: "cors",
       headers: {
@@ -63,6 +63,7 @@ class GetServerData extends React.Component {
     let temp = this.state.files[0][fileIdx.foundAt];
     let fileID = temp.url;
     let fileName = temp.file_name;
+    let fileInfo = this.state.files[0][fileIdx.foundAt];
 
     const http = window.require("http");
     const fs = window.require("fs");
@@ -74,28 +75,31 @@ class GetServerData extends React.Component {
           Accept: "application/json",
           Authorization: "Bearer " + Auth.getToken()
         },
-      responseType: "blob" // important
-    }, function(response) {
-      response.on('end', () => {
-        alert("Download Finish");
-        //write file details to json file to support locking
-        var obj = {};
-        fs.readFile("./public/files.json", 'utf-8', (error, content)=>{
-          if(!error){
-            obj = JSON.parse(content);
-          } 
-          obj[fileInfo.file_id] = fileInfo
-          fs.writeFile("./public/files.json",JSON.stringify(obj),(error, somthing)=>{
-
-          })
-        })
-      });
-      response.on('data', (chunck) => {
-        console.log("chunck: ",chunck)
-      });
-      response.pipe(file);
-    });
-
+        responseType: "blob" // important
+      },
+      function(response) {
+        response.on("end", () => {
+          alert("Download Finish");
+          //write file details to json file to support locking
+          var obj = {};
+          fs.readFile("./public/files.json", "utf-8", (error, content) => {
+            if (!error) {
+              obj = JSON.parse(content);
+            }
+            obj[fileInfo.file_id] = fileInfo;
+            fs.writeFile(
+              "./public/files.json",
+              JSON.stringify(obj),
+              (error, somthing) => {}
+            );
+          });
+        });
+        response.on("data", chunck => {
+          console.log("chunck: ", chunck);
+        });
+        response.pipe(file);
+      }
+    );
 
     // axios({
     //   url: fileID,
