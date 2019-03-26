@@ -51,6 +51,7 @@ class GetServerData extends React.Component {
     };
   };
 
+  //to download file
   handleDoubleClickItem(clickedFileId) {
     // alert("I got double-clicked!");
     let findFile = this.state.files[0];
@@ -91,7 +92,7 @@ class GetServerData extends React.Component {
       },
       function(response) {
         response.on("end", () => {
-          alert("Download Finish");
+          alert("Download Finished.");
           //write file details to json file to support locking
           var obj = {};
           fs.readFile("./public/files.json", "utf-8", (error, content) => {
@@ -116,7 +117,7 @@ class GetServerData extends React.Component {
 
   render() {
     let temp = this.state.files[0];
-
+    //displaying the uploaded files
     return !!temp
       ? temp.map(file => {
           return (
@@ -138,18 +139,87 @@ const getFileExtension = fileExe => {
 
 const selectImage = extension => {
   switch (extension) {
+    //images
     case "png":
-      return "picture.svg";
+    case "PNG":
+      return "png.png";
     case "jpg":
-      return "picture.svg";
+    case "JPG":
+    case "jpeg":
+      return "jpg.png";
+    case "svg":
+    case "SVG":
+      return "svg.png";
+    case "gif":
+    case "GIF":
+      return "GIF.svg";
+    //documents
     case "txt":
-      return "doc.svg";
+      return "txt.png";
     case "docx":
-      return "doc.svg";
+    case "doc":
+      return "doc.png";
+    case "pdf":
+      return "pdf.png";
+    case "ppt":
+    case "pptx":
+      return "ppt.png";
+    case "xlr":
+    case "xls":
+    case "xlsx":
+      return "ppt.png";
+    case "rtf":
+    case "RTF":
+      return "rtf.png";
+    case "zip":
+    case "7z":
+    case "rar":
+    case "z":
+      return "zip.png";
+    case "pkg":
+      return "pkg.png";
+    case "csv":
+      return "csv.png";
+    case "db":
+    case "dbf":
+    case "sql":
+    case "mdb":
+      return "dbf.png";
+    case "xml":
+      return "xml.png";
+    //audios videos
     case "mp3":
+      return "mp3.png";
+    case "mid":
+    case "midi":
+    case "wav":
+    case "wma":
       return "music_file.png";
+    case "avi":
+      return "avi.png";
+    case "mov":
+      return "mov.png";
+    case "mp4":
+      return "mp4.png";
+    case "wmv":
+      return "wmv.png";
+    case "flv":
+    case "m4v":
+    case "mpg":
+    case "mpeg":
+      return "video.png";
+    //programming files
+    case "css":
+      return "css.png";
+    case "html":
+      return "html.png";
+    case "js":
+      return "js.png";
+    case "json":
+      return "json.png";
+
     default:
-      return "folder.png";
+      return "file.png";
   }
 };
 
