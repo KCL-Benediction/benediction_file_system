@@ -44,27 +44,20 @@ class UploadDrop extends React.Component {
       }
     } else {
       // console.log(files, " has been uploaded.");
-
       const currentFile = files[0];
       const fileItem = new FileReader();
       fileItem.addEventListener(
         "load",
         () => {
-          // console.log(files[0].name, "has been uploaded.");
-          this.setState({
-            imgSrc: fileItem.result,
-            title: files[0].name
-          });
+          alert(files[0].name + " has been uploaded.");
         },
         false
       );
-
       fileItem.readAsDataURL(currentFile);
     }
   };
 
   render() {
-    const { imgSrc, title } = this.state;
     return (
       <div className="dropZone">
         <Dropzone
@@ -80,16 +73,6 @@ class UploadDrop extends React.Component {
             </section>
           )}
         </Dropzone>
-
-        <div className="displayFile">
-          {imgSrc !== null ? (
-            <div>
-              <img src={imgSrc} alt="uploadedFile" /> <p>{title}</p>
-            </div>
-          ) : (
-            ""
-          )}
-        </div>
       </div>
     );
   }

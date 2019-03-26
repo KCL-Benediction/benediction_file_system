@@ -6,7 +6,7 @@ class Setting extends React.Component {
     return (
       <div className="main-container">
         <div className="files-container">
-          <p>Settings View</p>
+          <p> Settings View</p>
         </div>
       </div>
     );
