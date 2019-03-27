@@ -11,7 +11,7 @@ class ClickableFileElement extends React.Component {
           className="file_image"
           alt="fileImage"
         />
-        <p>{title}</p>
+        <p className="fileName">{title}</p>
       </div>
     );
   }

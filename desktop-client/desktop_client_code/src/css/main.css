@@ -163,7 +163,7 @@ p.top-container_title {
   height: 150px;
   cursor: pointer;
   border-radius: 10px;
-  text-overflow: ellipsis;
+  margin: 5px;
 }
 .file:hover {
   background: gainsboro;
@@ -176,4 +176,12 @@ p.file_title {
   font-size: 12px;
   color: #222028;
   margin: 9px;
+}
+
+.fileName {
+  text-align: center;
+  white-space: nowrap;
+  width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
