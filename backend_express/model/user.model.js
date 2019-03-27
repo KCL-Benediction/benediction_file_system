@@ -1,3 +1,8 @@
+/*
+ ===========================================================================
+This file is created to specify scheme of user model
+===========================================================================
+*/
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

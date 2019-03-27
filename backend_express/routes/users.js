@@ -1,3 +1,17 @@
+/*
+ ===========================================================================
+ Benediction Controller to handle user related functions
+ The functions below are created to handle request from the clients
+
+ register: endpoint to handle request intend to register
+ login   : endpoint to handle request intend to log in
+
+--Authorizatoin--
+after register, the app would offer jwt when user log in.
+
+===========================================================================
+*/
+
 var express = require('express');
 var router = express.Router();
 var User = require("./../model/user.model.js");

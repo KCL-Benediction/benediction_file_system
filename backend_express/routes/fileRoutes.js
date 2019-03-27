@@ -1,3 +1,20 @@
+/*
+ ===========================================================================
+ Benediction Controller to handle file operation
+ The functions below are created to handle request from the clients
+
+ get_all_file_details: endpoint to handle request intend to get all details of files
+ change_file_name    : endpoint to handle request intend to change the name of the file
+ delete_a_file       : endpoint to handle request intend to delete a file
+ download_a_file     : endpoint to handle request intend to download a file
+ upload_a_file       : endpoint to handle request intend to upload a file
+
+--Authorizatoin--
+All request require authorization token to allow user to access to exact functions
+
+===========================================================================
+*/
+
 var express = require('express');
 var router = express.Router();
 var fs = require("fs");
