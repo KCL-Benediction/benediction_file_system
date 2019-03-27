@@ -17,7 +17,7 @@ class Login extends React.Component {
   };
 
   handleSubmit = e => {
-    // e.preventDefault();
+    e.preventDefault();
 
     if (!!this.state && !!(this.state.username && this.state.password)) {
       this.Auth.login(this.state.username, this.state.password).then(res => {
