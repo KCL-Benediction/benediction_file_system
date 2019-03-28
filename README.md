@@ -12,7 +12,12 @@ npm start
 ```
 ## Installation for mobile client
 
-Open xcworkspace and connect the iPhone with Xcode, implement program for mobiles.
+Open xcworkspace and connect the iPhone with Xcode. The pod file has been attached, run the command lines below
+
+```bash
+pod install
+pod init
+```
 
 ## Installation for server side application
 
