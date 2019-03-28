@@ -12,6 +12,8 @@ npm start
 ```
 ## Installation for mobile client
 
+Open xcworkspace and connect the iPhone with Xcode, implement program for mobiles.
+
 ## Installation for server side application
 
 use backend_express
