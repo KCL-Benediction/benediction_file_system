@@ -1,3 +1,19 @@
+/*
+ ===========================================================================
+The main file to run for the server app.
+
+This file includes:
+
+1. connect to the server for mongodb hosting
+2. link all model/controller/views
+3. hanlde CORS
+4. Parse all the request
+5. Websocket server establishing
+
+
+===========================================================================
+*/
+
 // basic for the server
 var express = require('express');
 var path = require('path');
