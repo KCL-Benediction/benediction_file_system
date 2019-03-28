@@ -28,7 +28,7 @@ In this project, the system will be developed in a similar idea to Dropbox and M
 
 The system is accessible only through logging in and there exists a local folder in the application directory for each user that is automatically synced to the central server. Users can move or copy files from their local hard drive to this folder, make modifications, delete and download and each action will be synced with the server. downloading files from the server into this folder will make sure the user has access to the latest files.
 
-The system's mobile application uses HTTP methods with the help of a Swift library \cite{c11} for performing HTTP request. The team only uses the POST and GET methods to interact with the server to create/update resources.
+The system's mobile application uses HTTP methods with the help of a Swift library \cite{c11} for performing HTTP requests and follows the traditional TableView design \cite{c19}. The team only uses the POST and GET methods to interact with the server to create/update resources.
 
 \section{Requirements and Design}
 \subsection{Requirements}
@@ -43,16 +43,16 @@ To tackle this problem, the team has decided to divide into 3 sub-teams: a mobil
 \caption{Benediction Gantt Chart}\label{ex4}
 \end{figure}
 
-After group consultation and input, the desktop client team’s work was to develop a web application for users to conveniently use the user interface (UI) to upload, modify and download files from the server instead of using the command-line. 
-The mobile client team’s requirement was to implement an application in the iOS environment as the members have previous development experience in this environment. The back-end team‘s requirement was to develop a server API to handle clients request and a WebSocket server to sync server-side changes with the client. \newline
+After group consultation and input, the desktop client team’s work was to develop a react desktop application for users to conveniently use the user interface (UI) to upload, modify and download files from the server instead of using the command-line. 
+The mobile client team’s requirement was to implement an application in the iOS environment as the members have previous iOS development experience. The back-end team‘s requirement was to develop a server API to handle clients request and a WebSocket server to sync server-side changes with the client. \newline
 
-The team has decided to reconsider the objectives initially proposed in the group's initial report as one of the members suggested a change on the system. In conclusion, the team has agreed that for a user to use the system, they must log in or sign up before getting access to upload or download files onto the server. This will help to identify each individual user when they are using the system. Furthermore, the team have also removed the 'extend the support for file types' in the optional objectives as the team believes that the user should be able to upload or download any files they want to/from the server.
+The team decided to reconsider the objectives initially proposed in the group's initial report as one of the members suggested a change on the system. The team agreed agreed to a log in and or sign up development for a user to get access to the system. This will help to identify each individual user when they are using the system. Furthermore, the team have also removed the 'extend the support for file types' in the optional objectives as the team believes that the user should be able to upload or download any files they want to/from the server.
 The updated objectives for this project is as follows:
 
 \begin{itemize}
   \item Develop a main server, a web and desktop client and a mobile client (based on iOS).
   \item Create Log-in page and users are required to log-in before accessing the files.
-  \item Clients must be able to upload, download and delete files.
+  \item Clients must be able to upload, download, modify and delete files.
   \item Local user files must be in sync with the main server files.
   \item Software testing and integration.
 \end{itemize}
@@ -83,13 +83,13 @@ The mobile client will be develop in a MAC environment, with X-code 10.1 and Swi
 
 Figure \ref{ex777} shows the hierarchical navigation in the Main.storyboard. There are five Xib files (custom views) that are not shown in storyboard. The Xib is used for implementing TableView and is actually embedded by coding methods in Main.storyboard, which allows the mobile client to provide a compatible overview for various iPhone models. This architecture is applied in pages of Local files, Cloud and Trash, with basic operations (download, upload, delete, rename) that can be handled by users. The users can upload documents to the server by choosing the file they want in the local memory.
 
-In order to make the mobile application run smoothly, HTTP and Websocket are used to create a communication and file synchronization with the server. When the user trigger an operation, a HTTP request will be sent to the server and the server will send back the response messages (JSON) to the application. The JSON message will get decode locally and save it as  a global public structured data. If there are any changes happening in server, it will multi-cast notifications via WebSocket to every client in the system. After receiving the notification, the mobile app will update the cloud files immediately and automatically. A synchronization button situated in the top of cloud page that supports manually update the server files for users. The file conflict problems are also handled locally in the mobile application, where before the user triggers an operation to upload, update or delete a file, the file ID will be checked first and then a system latency is set for analyzing the information sent from the server (completion or error). 
+In order to make the mobile application run smoothly, HTTP and Websocket are used to create a communication and file synchronization with the server. When the user trigger an operation, a HTTP request will be sent to the server and the server will send back the response messages (JSON) to the application. The JSON message will get decoded locally and saved as  a global public structured data. If there are any changes happening in server, it will multi-cast notifications via WebSocket to every client in the system. After receiving the notification, the mobile app will update the cloud files immediately and automatically. A synchronization button situated in the top of cloud page that supports manual update of the server files for users. The file conflict problems are also handled locally in the mobile application, where before the user triggers an operation to upload, update or delete a file, the file ID will be checked first and then a system latency is set for analyzing the information sent from the server (completion or error). 
 
 \paragraph{User Interface}\mbox{} \\
 
 The main page of the mobile client aims to provide directions for those who are not familiar with this app. A side menu shown in the left field of main page follows the strategy of hierarchical navigation, providing eight choices (\textbf{Welcome, Profile, Local Files, My Album, Cloud, Trash, Settings, Login/Logout}) for users to reach a destination, which will be addressed in more details in this section. 
 
-The interface introduction begins with the Cloud page that shows all the files in the server. Users are not allowed to manipulate cloud files until they have logged in successfully. Security and confidentiality are two of the main issues that both the client and the server wants to address in the program. To prevent information leakage during the period of data transmission, the user will need to login before accessing the server system, otherwise, all the communications based on HTTP request will be forbidden by the server. Figure \ref{fig:f5}, \ref{fig:f6}, \ref{fig:f7} and \ref{fig:f8} shown below gives a brief overview of the login and register design.
+The interface introduction begins with the Cloud page that shows all the files in the server. Users are not allowed to manipulate cloud files until they have logged in successfully. Security and confidentiality are two of the main issues that both the client and the server want to address in the program to prevent information leakage during the period of data transmission, otherwise, without authentication, all the communications based on HTTP request will be forbidden by the server. Figure \ref{fig:f5}, \ref{fig:f6}, \ref{fig:f7} and \ref{fig:f8} shown below gives a brief overview of the login and register design.
 
 \begin{figure}[H]
   \centering
@@ -225,7 +225,7 @@ If it is indeed a new file, an API call is made to upload it to the server as we
 \subsubsection{Back-end Server Application}
 \item\textbf{Overview}
 
-The back-end server application is responsible for handling every business logic, file storage, database connection for this project. For serving different types of clients, the endpoints of the server application should be able to used by different sources including mobile application and desktop application. To achieve the goal, the server would follow disciplines of Restful API.
+The back-end server application is responsible for handling every business logic, file storage, database connection for this project. For serving different types of clients, the endpoints of the server application should be able to used by different sources including mobile application and desktop application. To achieve the goal, the team decides to follow disciplines of Restful API.
 
 The team-working plays a huge role in the technical stacks. At first, two members assigned to work on the back-end application could not reach an agreement on which language to use. One of the members is more familiar with Java but the other member has no experience with it at all and more familiar to JavaScript/Nodejs. After several discussions in the team as well as initial review midway through development, the team came with a consensus of switching roles and change the language to JavaScript considering the factors described below. 
 
@@ -269,10 +269,10 @@ The team also made documentation describing all the details for endpoints in the
 \subsection{Mobile Client}
 \subsubsection{Login/Register Authentication}
 
-The Login/Register authentication in mobile client includes a register, log-in, log out functions. The mobile client set the GlobalToken as a String variable (in Httphelplers.swift), which can be used on every page. In fact, GlobalToken is a returned value sent by severing after a user logging into system successfully. Users must log in before they visit the Cloud page. Since the mobile client will check the length of GlobalToken before giving user' permission to visit Cloud page. In order to login/register, the mobile client use HTTP.request.post with the help of the SwiftHttp library \cite{c11}. The username and user password will also be stored locally as a global structure and the profile (which is used for showing user information) can have access to it.
+The Login/Register authentication in mobile client includes register, log-in, log out functions. The mobile client set the GlobalToken as a String variable (in Httphelplers.swift), which can be used on every page where GlobalToken is a returned value sent by severing after a user logging into system successfully. Users must log in before they visit the Cloud page. Since the mobile client will check the length of GlobalToken before giving user' permission to visit Cloud page. In order to login/register, the mobile client uses HTTP.request.post with the help of the SwiftHttp library \cite{c11}. The username and password will also be stored locally as a global structure and the profile (which is used for showing user information) can have access to it.
 
 \subsubsection{TableView Controller and App Data Delegate}
-A custom TableView is applied to the mobile client following the design of a library \cite{c10}. As mentioned above, Cloud page, Trash and Local Files all obey this fundamental user interface design. Delegate and data source are set in Xib files. In order to get the precise location of each file in this TableView, a two-dimensional vector is created in each TableView. It records the location of the file since the NSIndexPath (provided by UIKit) contains two parameters: section and index. Then for confirming file's location, both of section and index are required to draw a request (after searching a file, only one parameter index is needed cause the section is already confirmed). 
+A custom TableView is applied to the mobile client following the design of a library \cite{c10}. As mentioned above, Cloud page, Trash and Local Files all obey this fundamental user interface design. Delegate and data source are set in Xib files. In order to get the precise location of each file in this TableView, a two-dimensional vector is created in each TableView. It records the location of the file since the NSIndexPath (provided by UIKit) contains two parameters: section and index. Then for confirming file's location, both of section and index are required to draw a request (after searching a file, only one parameter index is needed because the section is already confirmed). 
 
 The data source of the Cloud page is connected to the App Delegate. The system aims for achieving synchronization automatically and Websocket acts as a bridge between client and server. As long as there are any changes of files happening in the server, the mobile client will receive the message. However, the connection is not stable and app delegate has to ensure the connection by using websocketdelegegate and socket.connect(). Those functions monitor the connection status and will connect to the server immediately once they detect any disconnection signal. 
 
@@ -283,7 +283,7 @@ The data source of the Cloud page is connected to the App Delegate. The system a
 \caption{Cloud page data source}\label{ex4}
 \end{figure}
 
-The file information getting from the server and local file list are all public NSObject classes. Another class named 'TranslateFiles.swift' is created and used as a class list to represent various types of files. All the files in TableView can be viewed by users, although some formats are not supported (like wmv and avi). For providing the preview of files, a framework named quick player is applied and all the three classes (Trash, Cloud and Local Files) are extended with 'UIViewControllerPreviewingDelegate'. The previewingContext gets the location of files in the table view through the index path and calls the related function to show the file contents.
+The file information got from the server and the local file list are all public NSObject classes. Another class named 'TranslateFiles.swift' is created and used as a class list to represent various types of files. All the files in TableView can be viewed by users, although some formats are not supported (like wmv and avi). For providing the preview of files, a framework named quick player is applied and all the three classes (Trash, Cloud and Local Files) are extended with 'UIViewControllerPreviewingDelegate'. The previewingContext gets the location of files in the table view through the index path and calls the related function to show the file contents.
 
 \subsubsection{HTTP Request and WebSocket}
 
@@ -303,14 +303,14 @@ WebSocket allows the mobile client to keep in touch with the server and have rea
 \begin{center}
 \includegraphics[width=9cm]{36.png}
 \end{center}
-\caption{Monitoring messages of Websocket status in console}\label{ex011}
+\caption{Monitoring messages of WebSocket status in console}\label{ex011}
 \end{figure}
 
-The mobile client address the issue of solving conflicts in this part. For example, when a cloud file is renaming by a user in a mobile client, and this file is deleted from the iCloud in another client. After the user finishes rename and upload request, there will be a conflict. With the aim of solving this problem, a Boolean variable is set for checking if a conflict exists. When this Boolean variable is false, then the rename of that could file will be forbidden locally. The downloading request sent by HTTP in the mobile client will always fetch the newest version that is saved in the server. And all the files downloaded from the server can be found in Local Files. 
+The mobile client address the issue of solving conflicts in this part. For example, when a cloud file is renaming by a user in a mobile client, and this file is deleted from the iCloud in another client. After the user finishes rename and upload request, there will be a conflict. With the aim of solving this problem, a Boolean variable is set for checking if a conflict exists. When this Boolean variable is false, then the rename of that could file will be forbidden locally. The downloading request sent by HTTP in the mobile client will always fetch the newest version that is saved in the server and all the files downloaded from the server can be found in Local Files. 
 
 \subsubsection{Foundamental Operations}
 
-The TableView provides an icon matching for each type of files. All the files are recognised in the same way. First, an enumeration is created to save all the formats' name (like mp3, mp4 and so on). Then the file's extension is cut from String lists and saved as a class type. The TableView also has five main functions, which are responsible for renaming, uploading, downloading, deleting and recovering a file. The situations are kind of different with respect to different Swift view controllers. The download function of Cloud page combines HTTP request and table cell selection. Files that have been downloaded are saved via a local folder string (NSHomeDirectory() plus the folder name). Deleting a file in the server will call the API and send a request to the server. Deleting a file locally means that we transfer a file from local files to Trash. FileManager.Default.moveItem(atPath:toPath:) is used in this step. FileManager is an interface provided by Apple, which helps developers to interact with the file system. Deleting a file in Trash or in Cloud means that this file has been removed permanently. 
+The TableView provides an icon matching for each type of files. All the files are recognised in the same way. First, an enumeration is created to save all the formats' name (like mp3, mp4 and so on). Then the file's extension is cut from String lists and saved as a class type. The TableView also has five main functions, which are responsible for renaming, uploading, downloading, deleting and recovering a file. The situations are different with respect to different Swift view controllers. The download function of Cloud page combines HTTP request and table cell selection. Files that have been downloaded are saved via a local folder string (NSHomeDirectory() plus the folder name). Deleting a file in the server will call the API and send a request to the server. Deleting a file locally means that we transfer a file from local files to Trash. FileManager.Default.moveItem(atPath:toPath:) is used in this step. FileManager is an interface provided by Apple, which helps developers to interact with the file system. Deleting a file in Trash or in Cloud means that this file has been removed permanently. 
 
 The HTTP API of server actually provides six kinds of fundamental operations. The function of getting files information from the server is performed in two ways. One of them stands for automatically updating the Cloud TableView, and another is related to the synchronization button shown in the navigation bar. The former one depends on both HTTP request and WebSocket messages. The latter one only has interaction with HTTP API. 
 
@@ -321,7 +321,7 @@ The HTTP API of server actually provides six kinds of fundamental operations. Th
 \caption{Button actions in Cloud Page}\label{ex4}
 \end{figure}
 
-Another operation applied to Cloud page is multi-selecting and downloading files. Firstly activate the multi-select function of TableView cells, then iterate each file in the file list (saving as a NSMutableArray) and call for HTTP to download one by one. Figure \ref{47} below demonstrates the code snippet of this part. 
+Another operation applied to Cloud page is multi-selecting and downloading files. Firstly by activating the multi-select function of TableView cells, then iterate each file in the file list (saving as a NSMutableArray) and call for HTTP to download one by one. Figure \ref{47} below demonstrates the code snippet of this part. 
 
 \begin{figure}[H]
 \begin{center}
@@ -330,7 +330,7 @@ Another operation applied to Cloud page is multi-selecting and downloading files
 \caption{Multi-select and download files}\label{47}
 \end{figure}
 
-\subsubsection{Picking and Uploading Photos}
+\subsubsection{Selecting and Uploading Photos}
 
 The navigation menu of the mobile client is actually another TableView that is cropped and has a sliding transmission to the Home View Controller. Since all the XIB files (custom TableView) we mentioned above are a kind of class. They can be called directly with the help of notification and observation functions in Swift, a Photo album is an exception. The view controller is extended in this part to open the local album for users. Figure \ref{ex41} shown below is a code snippet of the Home View Controller extension, and it helps users to pick a photo then uploading the file to the server. 
 
@@ -343,7 +343,7 @@ The navigation menu of the mobile client is actually another TableView that is c
  
 \subsubsection{Search Bar}
 
-Search bar function is achieved by extending the TableView with UISearchBarDelegate and UISearchControllerDelegate. A function named 'search controller is active' helps us to make sure the status of a search bar, which is very important when performing fundamental operations. Since the parameters used for specifying a file is different in Table Cells and a Search result. Figure \ref{ex42} shows the differences between those two situations.
+Search bar function is achieved by extending the TableView with UISearchBarDelegate and UISearchControllerDelegate. A function named 'search controller is active' helps us to ensure the status of a search bar, which is very important when performing fundamental operations. Since the parameters used for specifying a file is different in Table Cells and a Search result. Figure \ref{ex42} shows the differences between those two situations.
 
 \begin{figure}[H]
 \begin{center}
@@ -457,7 +457,7 @@ Moreover, set timeout could also be implement on the authorisation functions as 
 \end{figure}
 To achieve the requirement of synchronization of files. All the clients should be able to receive all the data in real-time. As a result, a real-time communication protocol should be applied in the project. In order to let the mobile client and the desktop client to be supported in the same solution. The team chooses WebSocket.
 
-WebSocket is a protocol for full-duplex communication over a single TCP connection. WebSocket makes data exchange between client and server simpler and allows server to push data to client actively. \cite{c7}In WebSocket API, browsers and servers only need to shake hands once to create a persistent connection and carry out bidirectional data transmission.
+WebSocket is a protocol for full-duplex communication over a single TCP connection. WebSocket makes data exchange between client and server simpler and allows server to push data to client actively. \cite{c6}In WebSocket API, browsers and servers only need to shake hands once to create a persistent connection and carry out bidirectional data transmission.
 
 The events broadcasted by WebSocket service should include all the event related to file changed on server. As the result, the team implemented:
 \begin{itemize}
@@ -473,7 +473,7 @@ All of the events broadcasted by the server is in the same structure that specif
 
 To allow every client to process the authorization, a general standard should be selected. After conduct research among different approach, the team decides to use JSON Web Token as the solution for this project.
 
-JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. There are several advantages to use JWT as the solution.\cite{c8} First, High security to prevent token from being forged and tampered with Self-contained to reduce storage overhead. Second cross-language, multi-language implementation Support expires, publisher validation.
+JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. There are several advantages to use JWT as the solution.\cite{c7} First, High security to prevent token from being forged and tampered with Self-contained to reduce storage overhead. Second cross-language, multi-language implementation Support expires, publisher validation.
 Of course there are still some disadvantages for using JWT,such as the message body can be decrypted to plain text by base64. Besides, JWT is not suitable for storing large amounts of information, and unexpired JWT can not be abolished.
 
 The team use a Node.js module called node-jsonwebtoken to achieve the objective. To integrate the module into the Express framework, another module called express-jwt is used as a middleware that check the authorization before the request is processed by the function in the controllers. 
@@ -497,7 +497,7 @@ Simply summarized, the process of MD5 algorithm is divided into four steps:
 
 \end{itemize}
 
-In the implementation, the team protects the password by, firstly, hashing the password in the endpoint of registration. Secondly, when the user tries to log in, the password would be hashed and then compared to the data in the database. Also, for every endpoint to offer the information of user, the endpoint would avoid offering anything related to the password.
+In the implementation, the team protects the password by, firstly, hashing the password in the endpoint of registration. Secondly, when the user tries to log in, the password would be hashed and then compared to the data in the database. Also, for every endpoint to offer the information of user, the endpoint would avoid offering any information related to the password.
 
 \subsubsection{File Conflict Solution}
 
@@ -546,11 +546,11 @@ Compared with Microsoft,
 There are some disadvantages exist either
 \begin{itemize} 
     \item Although Microsoft meets most of Gartner's standards, it is neither mature nor friendly in some respects compared to the other two platform products and APIs.
-    \item Unlike AWS, Azure does not have the concept of "region", which makes it difficult to backup data across regions. Despite its great efforts in open source and non-Microsoft technologies, Azure is still not the leader of open source, while AWS and Google's cloud technologies can bear the workload originating from open source.\cite{c9}
+    \item Unlike AWS, Azure does not have the concept of "region", which makes it difficult to backup data across regions. Despite its great efforts in open source and non-Microsoft technologies, Azure is still not the leader of open source, while AWS and Google's cloud technologies can bear the workload originating from open source.\cite{c8}
    
 \end{itemize}
 
-Overall,Google has built a powerful platform, especially good at data applications.GCP provides virtual machines, container engines and registries, as well as Cloud Functions. It has an object cloud storage service, cloud SQL plus Cloud Bigtable and cloud data storage, and the last two are NoSQL databases. Cloud Spanner is a relatively new highly scalable relational database service. Google is the best choice for this team to use.
+Overall, Google has built a powerful platform, especially good at data applications. GCP provides virtual machines, container engines and registries, as well as Cloud Functions. It has an object cloud storage service, cloud SQL plus Cloud Bigtable and cloud data storage, and the last two are NoSQL databases. Cloud Spanner is a relatively new highly scalable relational database service. Google is the best choice for this team to use.
 
 By using virtual machine on google, the team can easily scale the service if needed. In addition to that, the platform offer services include bind an ip address with the machine that help the service to be able to provide service in a fixed location on the Internet.
 
@@ -672,8 +672,8 @@ Black box, grey box combination and white box testing enable teams to benefit fr
 \subsection{Data Storage}
 \subsubsection{MongoDB}
 
-The team chooses MongoDB as its database. MongoDB aims to provide a rich document orientated structure with dynamic queries that you'll recognize from RDMBS offerings such as MySQL. MongoDB, a cross-platform NoSQL database, is the fastest-growing new database in the world. MongoDB documents are difinetly similar to the JSON objects. Field values can contain other documents, arrays and others.
-\cite{c10}\newline 
+The team chooses MongoDB as its database solution. MongoDB aims to provide a rich document orientated structure with dynamic queries that you'll recognize from RDMBS offerings such as MySQL. MongoDB, a cross-platform NoSQL database, is the fastest-growing new database in the world. MongoDB documents are difinetly similar to the JSON objects. Field values can contain other documents, arrays and others.
+\cite{c9}\newline 
 By default, MongoDB pays more attention to high insertion speed and handles large-scale single tables than transaction security. Database expansion is very challenging, and MySQL table performance will undoubtedly decrease when the single table size reaches 5-10GB. MongoDB will be able to do this easily when you need to fragment and split your database. Reliable environment guarantees high availability. And then it use location-based data queries to search faster.Without a professional DBA and without structuring your data and joining queries, MongoDB would be our first choice. MongoDB is very suitable for class persistence. Classes can be serialized into JSON and stored in MongoDB.
 
 
@@ -688,9 +688,9 @@ Due to the fact that the upload process of the files could be very fast, the dat
 Regarding the problems addressed above, the connection between MongoDB server and back-end side application should be stable to reach the requirements. But there is no guarantee that the connection will always be stable. To solve the problem, the team decides to store the information of the files in a local JSON file. By using JSON files in the local machine, the applications does not require a stable connection between database server and back-end application server, and all the data can be managed easily.
 
 \section{Teamwork}
-Because of lack of communication in the original back-end sub team, the back-end team has spent almost a month researching different solutions and languages to choose for the back-end application without discussion between the members, this causes conflicts and no agreed solution were decided. After the receiving the feedback on the project initial report and presentation. The sub team for back-end development still could not find a conclusion on which language to use as well as the solution for real-time synchronization.Thus, the other members have stepped up and help the back-end team to reach an agreement by assigning different jobs to the two members. This action was done because it was effecting the whole team implementation as other team members will need to make a start on learning and doing research on their implementation. As a result, the team made a decision of switching roles between Yao Te-Chien and Isaac Muhumuza. With more experience on WebSocket as a real-time and Nodejs communication, Yao Te-Chien change the language for back-end to Javascript, and Isaac Muhumuza focused on contributing on using Nodejs to implement all the features related to file system on desktop client.
+Because of lack of communication in the original back-end sub team, the back-end team has spent almost a month researching different solutions and languages to choose for the back-end application without discussion between the members, this causes conflicts and no agreed solutions were decided. After receiving the feedback on the project initial report and presentation. The sub team for back-end development struggled to find conclusions on which languages to use and solution for real-time synchronization. Thus, after discussion as a team, an agreement was reached and roles were switched to further more development. This action effected the whole team in terms of time that would have been used for implementation of the project work. Two members switched roles as one had more experience on WebSocket as a real-time and Nodejs communication that was going to be used including JavaScript (Yao Te-Chien) while the other team member with less experience contributed to front end Nodejs (Isaac Muhumuza) implementing all the features related to file system on desktop client.
 
-However, for the back-end team, due to the lack of experience of Zhang, Yiwei Harper, even though Harper tried to contribute many times, but the qualities of the code did not meet the standard and can not integrate with the code written by others. Therefore Zhang, Yiwei Harper has zero contribution to the program and none of code written by her can run. As a consequence, Yao Te-Chien finishes all the tasks on implementation for back-end. Harper mostly focused on describing the back-end knowledge of report in back-end teamt. 
+However, for the back-end team, due to the lack of experience of another member (Zhang, Yiwei Harper), even though Harper tried to contribute a few times, but the qualities of the code did not meet the standard therefore not integrating it with the code written by others, resulted in having zero contribution to the program. The code written by Harper each time could not successfully run and as a consequence, Yao Te-Chien finished all the back-end tasks on implementation alone. Harper mostly helped on describing the back-end knowledge in the report. 
 
 For the mobile team; Yan Li and Jihye Hwang, the UI design has been decided, the team separate the job into tasks assigned to each member. Each member took one by one function and start working on their code. Once a task is done, the member will move to working on the next tasks. Li has some experience about iOS but this development is new for Jihye. Fortunately, Jihye used to C and C++ so she can handle the Swift language. The team has met three or four times a week. During the meeting, the members discuss, coordinate some part of the code, combined the code and solve the problem together.
 
@@ -699,16 +699,16 @@ As mentioned above, the members have switched between the back-end and desktop t
 
 \section{Evaluation}
 \subsection{Possible Improvements on Team Work}
-In term of the team-working in this project, there are multiple improvements that can be made. Firstly, the division of the jobs can be more specific and the responsibilities of every member should be more clear. At the beginning of the project, the team is divided into three sub teams as back-end, mobile client and desktop client division. However, further division on tasks should be conduct earlier, so the members are assigned in their own duties from the start. This could offer more time for all the members to investigate on the technologies choices and learn skills need to be applied in this project. Moreover, the dispute on the technologies to use should also be settled earlier so that more time can be spent on the developing the system. 
+In terms of the team-working in this project, there are multiple improvements that can be made. Firstly, the division of the jobs can be more specific and the responsibilities of every member should be more clear. At the beginning of the project, the team is divided into three sub teams as back-end, mobile client and desktop client division. However, further division on tasks should be conducted earlier, so the members are assigned own duties from the start. This could offer more time for all the members to investigate any technology choices and learn skills required to complete project. Moreover, the dispute on the technologies to use should also be settled earlier so that more time can be spent on the developing the system. 
 
-Secondly, the communication between the members, even though, the team has set up a team meeting at least once a week to give an update of what each member has been doing but because the tasks were not clearly defined after switching the sub team, which causes some members to have different approach on developing their code. In addition, the team also have a group chatroom for members to ask or give their opinion on the project, however, some members were not actively response to messages which causes a difficult communication between the team. This is believed to cause the sub team switching and the delaying on development of this project. 
+Secondly, the communication between the members, even though, the team has set up a team meetings every week to give an update of what each member has been doing but because the tasks were not clearly defined after switching to sub teams, which causes some members to have different approaches on developing their code. In addition, the team also have a group chatroom for members to ask or give their opinion on the project, however, some members were not actively responsive to messages which causes a difficulty in communication between the team. This is believed to cause the sub team switching and the delaying on development of this project. 
 
 Overall, the team has worked well together in order to get the project done due in time. Even though, it was a rough start and many unexpected events along the way, the team has tried to group together without having big conflicts between the members so that it affect the scheduled timeline as little as possible but at the same time ensure that all members have assigned to a job.
 
 \subsection{Further Improvements}
 \subsubsection{Mobile Client}
 
-One of the mobile app's disadvantages is the User Interface design. Firstly, the welcome page only has a navigation bar and introduction information. The navigation bar that only appears in the welcome page might be not convenient for users to transfer between various pages. A replication of the navigation menu should be situated as a sidebar button for every page. In addition, the page of log-in/log-out status checking should be refined in further work. For those who are not familiar with this mobile client might intent to click the Cloud page at first. Then the warning alerts will suddenly appear for them and urge them to log into the system. In the Settings page, this mobile client should have some functions which allow the users to have a selection in language, region and time and so on. In addition, the pages that provide the main functions are designed to have TableView to enable the users scrolling the screen up and down. However, a Scroll View Controller should be implemented in login/register part for the user's convenience and is compatible with every size of the iPhone screen. Remedies are required for those part to provide better services.
+One of the mobile app's disadvantages is the User Interface design. Firstly, the welcome page only has a navigation bar and introduction information. The navigation bar that only appears in the welcome page might be not convenient for users to transfer between various pages. A replication of the navigation menu should be situated as a sidebar button for every page. In addition, the page of log-in/log-out status checking should be refined in further work. For those who are not familiar with this mobile client might intend to click the Cloud page at first. Then the warning alerts will suddenly appear and urge them to log into the system. In the Settings page, this mobile client could have some functions which allow the users to have a selection in language, region and time and so on. In addition, the pages that provide the main functions are designed to have TableView to enable the scrolling up and down. However, a Scroll View Controller should be implemented in login/register part for the user's convenience and is compatible with every size of the iPhone screen. Remedies are required for these parts to provide better services.
 
 Secondly, the mobile client doesn't have a number of Simulators for testing the program simultaneously. A better level of testing should be achieved to observe the program running status. The mobile client might not consider all the possibilities of conflicts happening locally.
 
@@ -717,19 +717,19 @@ Thirdly, both of the coding style and coding methods of the mobile client have s
 Last, for handling the errors returned by server, the mobile client just decodes the JSON messages and show them as Tips (UIAlertController). However, the mobile client should analyse every situation and make the tips clear and understandable for users. There is also another issue. For unknown reason, sometimes tips don't show up after finishing work of uploading a photo in album.
 
 \subsubsection{Desktop Client}
-Firstly, the security issues of accessing the web application UI, where further authorisation steps could be made, this includes having email address to verify the user's account and use that to send forgot password link to the user.
+Further work is required in terms of the security issues of accessing the web application UI, where further authorisation steps could be made, this includes having email address to verify the user's account but also used as password reminder links.
 
 Secondly, the setting page could also be further developed to allow the user to report any issues or change/edit their personal information, i.e. changing their password or edit their email address. Furthermore, if cookies are implemented, they could also use this page to set the cookies according to their preferences.
 
-Lastly, the status implementation of the UI, this will allow the user to know the status of the application. For example, whether the file is uploading or downloading and whether the UI is syncing to the server. This will inform more information to the user so that they can decide or know which step they should proceed to next.
+Lastly, more work could be through providing status notifications in the application such as time status when files are being uploaded or downloaded and whether the UI is syncing to the server. This will inform more information to the user so that they can decide or know which step they should proceed to next.
 
 \subsubsection{Back-end Server Application}
 
-The further implementation for the back-end application would firstly be the optimization of the file storage system. The architecture of the back-end application now in this project is to store the file shared in a folder in the directory of the back-end application. This might cause multiple questions. First, the file could be changed or accidentally deleted when developing the application. Also, this mechanism can not provide multiple file requests in a short period. By using file storage service offered by Azure, AWS or other service provider, the file could be more secured and be able to serve many request at a short period of time. Beside, combing a CDN could make the cost lower and faster.
+Further implementation and enhancement for the back-end application would involve optimization of the file storage system. The architecture of the back-end application now in this project is to store the file shared in a folder in the directory of the back-end application. This might cause multiple issues including the file being accidentally deleted when developing the application and the mechanism does not provide multiple file requests in a short period. By using file storage service offered by Azure, AWS or other service providers, the file could be more secured and be able to serve many request at a short period of time. Beside, combing a CDN could make the cost lower and faster.
 
-In term of service design, the server application can not only store the latest version of the files, three or even more versions can be stored in the file system in case the user want to access the older versions of the files. This could also fix the issue that the user might accidentally overwrite a file with a error file or file with wrong content. Furthermore, a mechanism for compare files of different version can be used to reduce the time on updating a new file. In other word, if only the difference of a files in a new version should be uploaded in updating scenario, the task can be done way faster.
+In term of service design, the server application can not only store the latest version of the files, three or even more versions can be stored in the file system in case the user wanted to access the older versions of the files. This could also fix the issue that the user might accidentally overwrite a file as multiple versions of it exist. Furthermore, a mechanism for comparing files of different version could be implemented to provide users with more choice and ability to pick which changes should be stored. In other word, if only the difference of a files in a new version should be uploaded in updating scenario, less information is sent to server and the task can be done faster.
 
-Moreover, the idea of difference checking on different versions of a file can be stored as logs in the system. The user can track all the change, and remove any error they encounter in the file in a well-organized fashion. Combing the user system, this file synchronization system can be used as a collaboration tool for any scenario on digital content.
+Additionally, the idea of providing logs of changes made to files in the system would benefit users in case they need to revert to older changes. The user can also track all the change, and remove any errors they encounter in the file in a well-organized fashion. Combing the user system, this file synchronization system can be used as a collaboration tool for any scenario on digital content.
 
 \section{Peer assessment}
 
@@ -757,6 +757,8 @@ Moreover, the idea of difference checking on different versions of a file can be
 
 \bibitem{c11} ``SwiftHTTP is a thin wrapper around NSURLSession in Swift to simplify HTTP requests", github.com, 2019. [Online]. Available: https://github.com/daltoniam/SwiftHTTP. [Accessed: 13-Feb-2019].
 
+\bibitem{c19} ``A view that presents data using rows arranged in a single column", developer.apple.com, 2019. [Online]. Available: https://developer.apple.com/documentation/uikit/uitableview. [Accessed: 17-Feb-2019].
+
 \bibitem{c3} L. Sharma, ``WaterFall Model in Software Developement Life Cycle | SDLC", Toolsqa.com, 2019. [Online]. Available: https://www.toolsqa.com/software-testing/waterfall-model/. [Accessed: 21-Jan-2019].
 
 \bibitem{c1} Manning, J., Buttfield-Addison, P. and Nugent, T., 2018. Learning Swift: building apps for macOS, iOS, and beyond. `` O'Reilly Media, Inc.".
@@ -775,15 +777,13 @@ Moreover, the idea of difference checking on different versions of a file can be
 
 \bibitem{c15} ``jwt-decode", npm, 2019. [Online]. Available: https://www.npmjs.com/package/jwt-decode. [Accessed: 07-Mar-2019] 
 
+\bibitem{c7} ``JSON Web Token (JWT) draft-jones-json-web-token-10", tools.ietf.org, 2019. [Online]. Available: https://tools.ietf.org/html/draft-jones-json-web-token-10. [Accessed: 02-Mar-2019].
+
 \bibitem{c8} M. Carey, ``AWS vs Azure vs Google: What's the Best Cloud Platform for Enterprise?", ComputerworldUK, 2019. [Online]. Available: https://www.computerworlduk.com/it-vendors/microsoft-azure-vs-aws-vs-google-cloud-public-cloud-comparison-which-cloud-is-best-for-enterprise-3624848/. [Accessed: 06-Feb-2019].
 
 \bibitem{c9} T. MongoDB, P. Membrey, E. Plugge and D. Hawkins, ``The Definitive Guide to MongoDB - The NoSQL Database for Cloud and Desktop Computing Peter Membrey Apress", Apress.com, 2019. [Online]. Available: https://www.apress.com/gb/book/9781430230519. [Accessed: 22-Feb-2019].
 
 \bibitem{c2} ``380 free vector icons of Essential Collection designed by Smashicons", Flaticon, 2019. [Online]. Available: https://www.flaticon.com/packs/essential-collection/5. [Accessed: 09-Feb-2019].
-
-\bibitem{c5} Le, D.M., 2015, October. A Tree-Based, Domain-Oriented Software Architecture for Interactive Object-Oriented Applications. In 2015 Seventh International Conference on Knowledge and Systems Engineering (KSE) (pp. 19-24). IEEE.
-
-\bibitem{c7} ``JSON Web Token (JWT) draft-jones-json-web-token-10", tools.ietf.org, 2019. [Online]. Available: https://tools.ietf.org/html/draft-jones-json-web-token-10. [Accessed: 02-Mar-2019].
 
 \end{thebibliography} 
 
