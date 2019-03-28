@@ -185,3 +185,7 @@ p.file_title {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/*Settings */
+.settingCont {
+  margin: 10px;
+}
