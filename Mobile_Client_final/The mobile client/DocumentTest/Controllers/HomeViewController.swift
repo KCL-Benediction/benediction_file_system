@@ -13,8 +13,8 @@ import UIKit
 
 // public controller which will be called for opening the new page
 // they have to be public variables. If we use them as private ones, conflicts will appear
-public let file1 = NaviMainController()
-public let file2 = CloudFileNaviViewController()
+
+//public
 public let file3 = TrashNaviViewController()
 
 class HomeViewController: UIViewController, UINavigationControllerDelegate,UIImagePickerControllerDelegate
@@ -29,8 +29,8 @@ class HomeViewController: UIViewController, UINavigationControllerDelegate,UIIma
     {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        let L1=file1 //this step is necessary. cause our tableviews are XIB and we use convenience init() to create new folders.
-        let L2=file2 //Those L1, L2, L3 help us to create the initial class. Without them, some operations liking downloading from server to local directory, or deleting a file from local files directory to local traash directory will have conflicts
+        //let L1=file1 //this step is necessary. cause our tableviews are XIB and we use convenience init() to create new folders.
+        //let L2=file2 //Those L1, L2, L3 help us to create the initial class. Without them, some operations liking downloading from server to local directory, or deleting a file from local files directory to local traash directory will have conflicts
         let L3=file3 //We use each of those file with table menu notification in the following section
         
         //Notification for linking the navigation menu and the main page
@@ -81,11 +81,13 @@ class HomeViewController: UIViewController, UINavigationControllerDelegate,UIIma
     
     @objc func showupload ()
     {
+        let file1 = NaviMainController()
         present(file1, animated: true, completion: nil)
     }
     
     @objc func showdownload ()
     {
+        let file2 = CloudFileNaviViewController()
         present(file2, animated: true, completion: nil)
     }
     
