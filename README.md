@@ -12,7 +12,7 @@ npm start
 ```
 ## Installation for mobile client
 
-Download the folder of "the mobile client".  Open xcworkspace and connect your iPhone with Xcode. The pod file has been attached in the folder, run the command lines below
+Download the folder "Mobile_Client_final/The mobile client".  Open xcworkspace and connect your iPhone with Xcode. The pod file has been attached in the folder, run the command lines below
 
 ```bash
 pod install
