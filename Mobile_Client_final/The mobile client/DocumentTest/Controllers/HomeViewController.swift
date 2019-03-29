@@ -15,6 +15,7 @@ import UIKit
 // they have to be public variables. If we use them as private ones, conflicts will appear
 
 //public
+// only the trash page need this change
 public let file3 = TrashNaviViewController()
 
 class HomeViewController: UIViewController, UINavigationControllerDelegate,UIImagePickerControllerDelegate
@@ -28,6 +29,7 @@ class HomeViewController: UIViewController, UINavigationControllerDelegate,UIIma
     override func viewDidLoad()
     {
         super.viewDidLoad()
+        //problem will happen when we make both cloud and local files as public objects
         // Do any additional setup after loading the view, typically from a nib.
         //let L1=file1 //this step is necessary. cause our tableviews are XIB and we use convenience init() to create new folders.
         //let L2=file2 //Those L1, L2, L3 help us to create the initial class. Without them, some operations liking downloading from server to local directory, or deleting a file from local files directory to local traash directory will have conflicts
